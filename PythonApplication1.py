@@ -1,258 +1,260 @@
-from msilib.schema import File
-from tkinter import *
-from tkinter import ttk
+from flask import Flask, flash, render_template, request, redirect, url_for
 
+app = Flask(__name__)
+
+# User Classes
 class User:
-    def __init__(self, username, password):
-        self.username = username
+    def __init__(self, userid, password):
+        self.userid = userid
         self.password = password
 
 class Patient(User):
-    def __init__(self, username, password):
-        super().__init__(username, password)
-        self.patient_data = {}
+    def __init__(self, userid, password):
+        super().__init__(userid, password)
+
+class Admin(User):
+    def __init__(self, userid, password):
+        super().__init__(userid, password)
+
+# Sample users
+patients = [Patient('123', '123')]
+admins = [
+    {'userid': 'admin@gmail.com', 'password': '1234'}
+]
+
+# Routes
+
+# Homepage
+@app.route('/')
+def home():
+    return render_template('login.html')
+
+# user screen
+@app.route('/userscreen')
+def userscreen():
+    return render_template('userscreen.html')  # Make sure the 'userscreen.html' template exists
+
+#doctor list
+@app.route('/availabledoctor')
+def doctor():
+    return render_template('availabledoctor.html')
+
+#appointment call
+@app.route('/appointmentcall')
+def appointmentcall():
+    return render_template('appointmentcall.html')
+
+# login route
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        userid = request.form['userid']
+        password = request.form['password']
         
-class Doctor(User):
-    def __init__(self, username, password):
-        super().__init__(username, password)
+        # Check both admins and patients lists for valid credentials
+        for user in admins:
+            if user['userid'] == userid and user['password'] == password:
+                return redirect(url_for('dashboard'))  # Redirect to dashboard
+            else:
+                # flash('invalid')
+                return redirect(url_for('userscreen'))
+        return "Invalid userid or password!"
+    return render_template('login.html')
+
+# Dashboard
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+# Registration Form
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        patient_id = request.form['patient_id']
+        patient_name = request.form['patient_name']
+        id = request.form['idcardnumber']
+        gender = request.form['gender']
         
-def login(users):
-    while True:
-        username = input("Enter The Username: ")
-        password = input("Enter The Password: ")
-
-        for u in users:
-            if username == u.username and password == u.password:
-                print("User Has Been Logged in!")
-                return u
-        else:
-            print("Username or Password is incorrect. Please try again!")
-            
-#def on_validate(P):
- #   return P.isdigit()
-
-def on_validate(P, data_type):
-    if P == "":
-        return True  # Allow empty entry
+        if not all([patient_id, patient_name, id, gender]):
+            return "All fields are required!"
+        # Here, you can save data to the database
+        return f"Registered: {patient_name}"
     
-    if data_type == "text":
-      return P.isalpha()
-    elif data_type == "numeric":
-      return P.isdigit()
-    else:
-      return False
+    return render_template('register.html')  # Render the signup form
 
-def open_registration_window(user):
-    registration_window = Toplevel(root)
-    registration_window.title("Registration.")
-
-    # Add widgets and layout for the registration window
-    label_patient_name = Label(registration_window, text="Patient Name:")
-    label_patient_name.grid(row=0, column=0, padx=10, pady=10)
-    entry_patient_name = Entry(registration_window, validate="key", validatecommand=(registration_window.register(lambda P: on_validate(P, "text")), '%P'))
-    entry_patient_name.grid(row=0, column=1, padx=10, pady=10)
-
-    label_father_name = Label(registration_window, text="Father's Name:")
-    label_father_name.grid(row=1, column=0, padx=10, pady=10)
-    entry_father_name = Entry(registration_window, validate="key", validatecommand=(registration_window.register(lambda P: on_validate(P, "text")), '%P'))
-    entry_father_name.grid(row=1, column=1, padx=10, pady=10)
-    
-    label_age = Label(registration_window, text="Age:")
-    label_age.grid(row=2, column=0, padx=10, pady=10)
-    entry_age = Entry(registration_window, validate="key", validatecommand=(registration_window.register(lambda P: on_validate(P, "numeric")), '%P'))
-    entry_age.grid(row=2, column=1, padx=10, pady=10)
-    
-    label_gender = Label(registration_window, text="Gender:")
-    label_gender.grid(row=3, column=0, padx=10, pady=10)
-    entry_gender = Entry(registration_window, validate="key", validatecommand=(registration_window.register(lambda P: on_validate(P, "text")), '%P'))
-    entry_gender.grid(row=3, column=1, padx=10, pady=10)
-
-    label_contact = Label(registration_window, text="Contact:")
-    label_contact.grid(row=4, column=0, padx=10, pady=10)
-    entry_contact = Entry(registration_window, validate="key", validatecommand=(registration_window.register(lambda P: on_validate(P,"numeric")), '%P'))
-    entry_contact.grid(row=4, column=1, padx=10, pady=10)
-                   
-    def submit_registration():
-        # Access the entered data
-        patient_name = entry_patient_name.get()
-        father_name = entry_father_name.get()
-        age = entry_age.get()
-        gender = entry_gender.get()
-        contact = entry_contact.get()
+# Register Patient Route
+@app.route('/registerpatient', methods=['GET', 'POST'])
+def register_patient():
+    if request.method == 'POST':
+        # Get data from the form
+        patient_id = request.form.get('patient_id')
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        age = request.form.get('age')
+        contact = request.form.get('contact')
+        gender = request.form.get('gender')
+        # Validate the fields
+        if not all([patient_id, first_name, last_name, age, gender, contact]):
+            return "All fields are required!"
         
-        if any(field == "" for field in [patient_name , father_name, age, gender, contact]):
-            print("Error: Please Fill In All Fields.")
-        else:
-        # You can do something with the collected data, such as saving it to a database
-         print("Patient Name:", patient_name)
-         print("Father's Name:", father_name)
-         print("Age:", age)
-         print("Gender:", gender)
-         print("Contact:", contact)
+        # If everything is fine, save the data or process it
+        return f"Patient Registered: {first_name} {last_name}"
 
-        # Close the registration window if needed
-        registration_window.destroy()
+    # Render the form for GET request
+    return render_template('registerpatient.html')
 
-    # Add a submit button
-    submit_button = Button(registration_window, text="Submit", command=submit_registration)
-    submit_button.grid(row=5, column=0, columnspan=2, pady=10)
+# Appointment Patient Route
+@app.route('/appointment', methods=['GET', 'POST'])
+def appointment_patient():
+    if request.method == 'POST':
+        # Get data from the form
+        patient_id = request.form.get('patient_id')
+        patient_name = request.form.get('patient_name')
+        age = request.form.get('age')
+        gender = request.form.get('gender')
+        appodate = request.form.get('appdate')
+        appoday = request.form.get('appday')
+        appotym = request.form.get('apptym')
+        rsnappo = request.form.get('rsnappo')
+        constyp = request.form.get('conslt')
+        # Validate the fields
+        if not all([patient_id, patient_name, age, gender, appodate, appoday, appotym, rsnappo, constyp]):
+            return "All fields are required!"
+        
+        # If everything is fine, save the data or process it
+        return f"Patient Appointment: {patient_id} {patient_name}"
 
-def open_appointment_window(user):
-    appointment_window = Toplevel(root)
-    appointment_window.title("Appointment Scheduling.")
+    # Render the form for GET request
+    return render_template('appointment.html')
 
-    # Add widgets and layout for the registration window
-    
-    label_patient_name = Label(appointment_window, text="Patient Name:")
-    label_patient_name.grid(row=0, column=0, padx=10, pady=10)
-    entry_patient_name = Entry(appointment_window, validate="key", validatecommand=(appointment_window.register(lambda P: on_validate(P, "text")), '%P'))
-    entry_patient_name.grid(row=0, column=1, padx=10, pady=10)
-    
-    label_doctor_name = Label(appointment_window, text="Doctor Name:")
-    label_doctor_name.grid(row=1, column=0, padx=10, pady=10)
-    entry_doctor_name = Entry(appointment_window, validate="key", validatecommand=(appointment_window.register(lambda P: on_validate(P, "text")), '%P'))
-    entry_doctor_name.grid(row=1, column=1, padx=10, pady=10)
+# ward bed Route
+@app.route('/wardbed', methods=['GET', 'POST'])
+def ward_bed():
+    if request.method == 'POST':
+        # Get data from the form
+        ward_id = request.form.get('ward_id')
+        ward_name = request.form.get('ward_name')
+        ward_typ = request.form.get('ward_typ')
+        floor_no = request.form.get('floor_no')
+        bed_id = request.form.get('bed_id')
+        bed_typ = request.form.get('bed_typ')
+        patient_id = request.form.get('patient_id')
+        bkdate = request.form.get('bkdate')
+        dscdate = request.form.get('dscdate')
+        resvsts = request.form.get('resvsts')
+        # Validate the fields
+        if not all([ward_id, ward_name, ward_typ, floor_no, bed_id, bed_typ, patient_id, bkdate, dscdate, resvsts]):
+            return "All fields are required!"
+        
+        # If everything is fine, save the data or process it
+        return f"ward Registered: {ward_id} {ward_name}"
 
-    label_doctor_id = Label(appointment_window, text="Doctor Id:")
-    label_doctor_id.grid(row=2, column=0, padx=10, pady=10)
-    entry_doctor_id = Entry(appointment_window, validate="key", validatecommand=(appointment_window.register(lambda P: on_validate(P, "numeric")), '%P'))
-    entry_doctor_id.grid(row=2, column=1, padx=10, pady=10)
+    # Render the form for GET request
+    return render_template('wardbed.html')
 
-    label_date = Label(appointment_window, text="Date:")
-    label_date.grid(row=3, column=0, padx=10, pady=10)
-    entry_date = Entry(appointment_window, validate="key", validatecommand=(appointment_window.register(lambda P: on_validate(P, "numeric")), '%P'))
-    entry_date.grid(row=3, column=1, padx=10, pady=10)
+# pharmacy Route
+@app.route('/pharmacy', methods=['GET', 'POST'])
+def pharmacy():
+    if request.method == 'POST':
+        # Get data from the form
+        medicine_id = request.form.get('medicine_id')
+        medicine_name = request.form.get('medicine_name')
+        brand = request.form.get('brand_name')
+        dosage = request.form.get('dosage_form')
+        strength = request.form.get('strength')
+        quantity = request.form.get('Quantity_in_Stock')
+        expiry_date = request.form.get('expiry_date')
+        batch_no = request.form.get('batch_no')
+        Price = request.form.get('Price_per_Unit')
+        # Validate the fields
+        if not all([medicine_id, medicine_name, brand, dosage, strength, quantity, expiry_date, batch_no, Price]):
+            return "All fields are required!"
+        
+        # If everything is fine, save the data or process it
+        return f"Pharmacy Registered: {medicine_id} {medicine_name}"
 
-    label_gender = Label(appointment_window, text="Gender:")
-    label_gender.grid(row=5, column=0, padx=10, pady=10)
-    entry_gender = Entry(appointment_window, validate="key", validatecommand=(appointment_window.register(lambda P: on_validate(P, "text")), '%P'))
-    entry_gender.grid(row=5, column=1, padx=10, pady=10)
+    # Render the form for GET request
+    return render_template('pharmacy.html')
 
-    def submit_appointment():
-        # Access the entered data
-        doctor_name = entry_doctor_name.get()
-        doctor_id = entry_doctor_id.get()
-        patient_name = entry_patient_name.get()
-        date = entry_date.get()
-        gender = entry_gender.get()
+# billing Route
+@app.route('/billing', methods=['GET', 'POST'])
+def billing():
+    if request.method == 'POST':
+        # Get data from the form
+        patient_id = request.form.get('patient_id')
+        invoice_id = request.form.get('invoice_id')
+        bill_date = request.form.get('bill_date')
+        total_amount = request.form.get('total_amount')
+        discount = request.form.get('discount')
+        tax_amount = request.form.get('tax_amount')
+        finl_amount = request.form.get('finl_amount')
+        payment_mtd= request.form.get('payment_mtd')
+        trns_id = request.form.get('trns_id')
+        paymt_sts = request.form.get('paymt_sts')
+        paymt_date = request.form.get('paymt_date')
+        # Validate the fields
+        if not all([patient_id, invoice_id, bill_date, total_amount, discount, tax_amount, finl_amount, payment_mtd, trns_id, paymt_sts, paymt_date]):
+            return "All fields are required!"
+        
+        # If everything is fine, save the data or process it
+        return f"Billing Registered: {patient_id} {invoice_id}"
 
-        if any(field == "" for field in [doctor_name, doctor_id, patient_name, date, gender]):
-            print("Error: Please Fill In All Fields.")
-        else:
-        # You can do something with the collected data, such as saving it to a database
-         print("Doctor Name:", doctor_name)
-         print("Doctor Id:", doctor_id)
-         print("Patient Name:", patient_name)
-         print("Date:", date)
-         print("Gender:", gender)
+    # Render the form for GET request
+    return render_template('billing.html')
 
-        # Close the registration window if needed
-        appointment_window.destroy()
+# online appo Route
+@app.route('/onlineappointment', methods=['GET', 'POST'])
+def onlineappointment():
+    if request.method == 'POST':
+        # Get data from the form
+        patient_id = request.form.get('patient_id')
+        patient_name = request.form.get('patient_name')
+        doctor_id = request.form.get('doctor_id')
+        doctor_name = request.form.get('doctor_name')
+        doctor_spe = request.form.get('doctor_spe')
+        rsndis = request.form.get('rsndis')
+        # Validate the fields
+        if not all([patient_id, patient_name, doctor_id, doctor_name, doctor_spe, rsndis]):
+            return "All fields are required!"
+        
+        # If everything is fine, save the data or process it
+        return f"Online Appointment: {patient_id} {patient_name} {doctor_id} {doctor_name}"
 
-    # Add a submit button
-    submit_button = Button(appointment_window, text="Submit", command=submit_appointment)
-    submit_button.grid(row=6, column=0, columnspan=2, pady=10)
+    # Render the form for GET request
+    return render_template('onlineappointment.html')
 
-def open_medical_records_window(user):
-    medical_records_window = Toplevel(root)
-    medical_records_window.title("Medical Records")
-    # Add widgets and layout for the medical records window as needed
+# medical rec Route
+@app.route('/medicalrec', methods=['GET', 'POST'])
+def medical_rec():
+    if request.method == 'POST':
+        # Get data from the form
+        patient_id = request.form.get('patient_id')
+        # Validate the fields
+        if not all([patient_id]):
+            return "All fields are required!"
+        
+        # If everything is fine, save the data or process it
+        return f"Medical Record: {patient_id}"
 
-    label_prescription = Label(medical_records_window, text="Prescription:")
-    label_prescription.grid(row=0, column=0, padx=10, pady=10)
-    
-    label_patient_name = Label(medical_records_window, text="Patient Name:")
-    label_patient_name.grid(row=1, column=0, padx=10, pady=10)
-    entry_patient_name = Entry(medical_records_window, validate="key", validatecommand=(medical_records_window.register(lambda P: on_validate(P, "text")), '%P'))
-    entry_patient_name.grid(row=1, column=1, padx=10, pady=10)
+    # Render the form for GET request
+    return render_template('medicalrec.html')
 
-    label_date = Label(medical_records_window, text="Date")
-    label_date.grid(row=2, column=0, padx=10, pady=10)
-    entry_date = Entry(medical_records_window, validate="key", validatecommand=(medical_records_window.register(lambda P: on_validate(P, "numeric")), '%P'))
-    entry_date.grid(row=2, column=1, padx=10, pady=10)
+# billing and payment Route
+@app.route('/billingpayment', methods=['GET', 'POST'])
+def billing_payment():
+    if request.method == 'POST':
+        # Get data from the form
+        patient_id = request.form.get('patient_id')
+        # Validate the fields
+        if not all([patient_id]):
+            return "All fields are required!"
+        
+        # If everything is fine, save the data or process it
+        return f"Payments: {patient_id}"
 
-    label_med = Label(medical_records_window, text="Medications:")
-    label_med.grid(row=3, column=0, padx=10, pady=10)
-    entry_med = Entry(medical_records_window, validate="key", validatecommand=(medical_records_window.register(lambda P: on_validate(P, "text")), '%P'))
-    entry_med.grid(row=3, column=1, padx=10, pady=10)
+    # Render the form for GET request
+    return render_template('billingpayment.html')
 
-    label_dos = Label(medical_records_window, text="Dosage:")
-    label_dos.grid(row=4, column=0, padx=10, pady=10)
-    entry_dos = Entry(medical_records_window, validate="key", validatecommand=(medical_records_window.register(lambda P: on_validate(P, "numeric")), '%P'))
-    entry_dos.grid(row=4, column=1, padx=10, pady=10)
-   
-    label_fre = Label(medical_records_window, text="Frequency:")
-    label_fre.grid(row=5, column=0, padx=10, pady=10)
-    entry_fre = Entry(medical_records_window, validate="key", validatecommand=(medical_records_window.register(lambda P: on_validate(P, "text")), '%P'))
-    entry_fre.grid(row=5, column=1, padx=10, pady=10)
-    
-    label_d_day = Label(medical_records_window, text="Duration Days:")
-    label_d_day.grid(row=6, column=0, padx=10, pady=10)
-    entry_d_day = Entry(medical_records_window, validate="key", validatecommand=(medical_records_window.register(lambda P: on_validate(P, "numeric")), '%P'))
-    entry_d_day.grid(row=6, column=1, padx=10, pady=10)
-    
-    def submit_medical_records():
-        # Access the entered data
-        patient_name = entry_patient_name.get()
-        d_day = entry_d_day.get()
-        date = entry_date.get()
-        fre = entry_fre.get()
-        dos = entry_dos.get()
-        med = entry_med.get()
-    
-        if any(field == "" for field in [patient_name , d_day, fre, date, dos, med]):
-            print("Error: Please Fill In All Fields.")
-        else:
-        # You can do something with the collected data, such as saving it to a database
-         print("Patient Name:", patient_name)
-         print("Dosage:", dos)
-         print("Frequency:", fre)
-         print("Medications:", med)
-         print("Date:", date)
-         print("Duration Day:",d_day)
-        # Close the registration window if needed
-        medical_records_window.destroy()
-
-    # Add a submit button
-    submit_button = Button(medical_records_window, text="Submit", command=submit_medical_records)
-    submit_button.grid(row=7, column=0, columnspan=2, pady=10)
-
-def exit_program():
-    root.destroy()
-
-# Sample data
-patient_user = Patient('123', '123')
-doctor_user = Doctor('doctor', 'pass')
-
-# Add the users to the list
-users = [patient_user, doctor_user]
-
-# Perform login
-user = login(users)
-
-root = Tk()
-root.geometry("1920x1080")
-root.title("Hospital Management System.")
-
-# Create a menu bar
-menu_bar = Menu(root)
-root.config(menu=menu_bar)
-
-# Create a patient menu
-patient_menu = Menu(menu_bar, tearoff=0)
-menu_bar.add_cascade(label="Patient", menu=patient_menu)
-
-# Add menu items to the patient menu
-patient_menu.add_command(label="Registration", command=lambda: open_registration_window(user))
-patient_menu.add_command(label="Appointment", command=lambda: open_appointment_window(user))
-patient_menu.add_command(label="Medical Records", command=lambda: open_medical_records_window(user))
-patient_menu.add_command(label="Exit", command=exit_program)
-
-# Use the actual path to your image file
-ss = PhotoImage(f='D:/Projects/HMS OOP/PythonApplication1/pin.png')  # Use forward slashes or double backslashes
-
-label = ttk.Label(root, image=ss)
-label.photo = ss  # To prevent garbage collection
-label.pack()
-
-root.mainloop()
+# Run the app
+if __name__ == '__main__':
+    app.run(debug=True)

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing and Payments Management</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #4facfe, #00f2fe); /* Gradient background */
+            color: #333;
+            overflow-y: hidden;
+        }
+
+        /* Form Container */
+        form {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 95%;
+            max-width: 400px;
+            height: 100vh; /* Occupy nearly full height of the viewport */
+            background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+        }
+
+        /* Header Styling */
+        h1 {
+            font-size: 1.2em;
+            text-align: center;
+            color: #4CAF50; /* Green accent */
+        }
+
+        /* Form Elements Styling */
+        label {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4CAF50; /* Green border on focus */
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Subtle green glow */
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.03); /* Slight zoom on hover */
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.3em;
+            }
+            label {
+                font-size: 0.8em;
+            }
+            input, select, button {
+                font-size: 0.8em;
+                padding: 7px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<form method="POST">
+    <h1>Billing and Payments Management</h1>
+
+    <label for="patient_id">Patient ID:</label>
+    <input type="number" name="patient_id" required>
+
+    <label for="invoice_id">Invoice ID:</label>
+    <input type="number" name="invoice_id" required>
+
+    <label for="bill_date">Bill Date:</label>
+    <input type="date" name="bill_date" required>
+
+    <label for="total_amount">Total Amount:</label>
+    <input type="number" name="total_amount" required>
+
+    <label for="discount">Discount:</label>
+    <input type="number" name="discount" required>
+
+    <label for="tax_amount">Tax Amount:</label>
+    <input type="number" name="tax_amount" required>
+
+    <label for="finl_amount">Final Amount:</label>
+    <input type="number" name="finl_amount" required>
+
+    <label for="payment_mtd">Payment Method:</label>
+    <select id="payment_mtd" name="payment_mtd">
+        <option value="Cash">Cash</option>
+        <option value="Credit Card">Credit Card</option>
+        <option value="Debit Card">Debit Card</option>
+        <option value="Online Payment">Online Payment</option>
+    </select>
+
+    <label for="trns_id">Transaction ID(Only for online payments):</label>
+    <input type="number" name="trns_id" required>
+
+    <label for="paymt_sts">Payment Status:</label>
+    <select id="paymt_sts" name="paymt_sts">
+        <option value="Paid">Paid</option>
+        <option value="UnPaid">UnPaid</option>
+    </select>
+
+    <label for="paymt_date">Payment Date:</label>
+    <input type="date" name="paymt_date" required>
+
+    <button type="submit">Submit</button>
+</form>
+
+</body>
+</html>

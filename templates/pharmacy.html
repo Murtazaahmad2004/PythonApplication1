@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy Management</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center; /* Center the form horizontally */
+            align-items: center;     /* Center the form vertically */
+            height: 100vh;           /* Full viewport height */
+            background: linear-gradient(to bottom, #4facfe, #00f2fe); /* Gradient background */
+            color: #333;
+            overflow-y: hidden;
+        }
+
+        /* Form Container */
+        form {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 95%;
+            max-width: 450px;
+            height: auto; /* Allow the form to adjust based on content */
+            background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+        }
+
+        /* Header Styling */
+        h1 {
+            font-size: 1.5em;
+            text-align: center;
+            color: #4CAF50; /* Green accent */
+        }
+
+        /* Form Elements Styling */
+        label {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4CAF50; /* Green border on focus */
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Subtle green glow */
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.03); /* Slight zoom on hover */
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.3em;
+            }
+            label {
+                font-size: 0.8em;
+            }
+            input, select, button {
+                font-size: 0.9em;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<form method="POST">
+    <h1>Pharmacy Management</h1>
+
+    <label for="medicine_id">Medicine ID:</label>
+    <input type="number" name="medicine_id" placeholder="Enter Medicine ID" required>
+
+    <label for="medicine_name">Medicine Name:</label>
+    <input type="text" name="medicine_name" placeholder="Enter Medicine Name" required>
+
+    <label for="brand_name">Brand Name:</label>
+    <select id="brand_name" name="brand_name" required>
+        <option value="GlaxoSmithKline Pharma">GlaxoSmithKline Pharma</option>
+        <option value="Pfizer Pharma">Pfizer Pharma</option>
+        <option value="Abbott Pharma">Abbott Pharma</option>
+        <option value="Sami Pharma">Sami Pharma</option>
+        <option value="Getz Pharma">Getz Pharma</option>
+        <option value="Hilton Pharma">Hilton Pharma</option>
+        <option value="Martin Dow Pharma">Martin Dow Pharma</option>
+        <option value="Ferozsons Laboratories Pharma">Ferozsons Laboratories Pharma</option>
+        <option value="Highnoon Laboratories Pharma">Highnoon Laboratories Pharma</option>
+        <option value="Barrett Hodgson Pharma">Barrett Hodgson Pharma</option>
+    </select>
+
+    <label for="dosage_form">Dosage Form:</label>
+    <select id="dosage_form" name="dosage_form" required>
+        <option value="Tablet">Tablet</option>
+        <option value="Syrup">Syrup</option>
+        <option value="Injection">Injection</option>
+        <option value="Capsule">Capsule</option>
+    </select>
+
+    <label for="strength">Strength:</label>
+    <select id="strength" name="strength" required>
+        <option value="10mg">10mg</option>
+        <option value="20mg">20mg</option>
+        <option value="30mg">30mg</option>
+        <option value="40mg">40mg</option>
+    </select>
+
+    <label for="Quantity_in_Stock">Quantity in Stock:</label>
+    <input type="number" name="Quantity_in_Stock" placeholder="Enter Quantity" required>
+
+    <label for="expiry_date">Expiry Date:</label>
+    <input type="date" name="expiry_date" required>
+
+    <label for="batch_no">Batch No:</label>
+    <input type="number" name="batch_no" placeholder="Enter Batch No" required>
+
+    <label for="Price_per_Unit">Price per Unit:</label>
+    <input type="number" name="Price_per_Unit" placeholder="Enter Price" required>
+
+    <button type="submit">Submit</button>
+</form>
+
+</body>
+</html>

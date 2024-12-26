@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule an Appointment</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #4facfe, #00f2fe); /*Gradient background*/
+            color: #333;
+            overflow-y: hidden;
+        }
+
+        /* Form Container */
+        form {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 95%;
+            max-width: 400px;
+            height: 100vh; /* Occupy nearly full height of the viewport */
+            background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+        }
+
+        /* Header Styling */
+        h1 {
+            font-size: 1.5em;
+            text-align: center;
+            color: #4CAF50; /* Green accent */
+            margin-bottom: 10px;
+        }
+
+        /* Form Elements Styling */
+        label {
+            font-size: 0.9em;
+            margin: 5px 0;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4CAF50; /* Green border on focus */
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Subtle green glow */
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.03); /* Slight zoom on hover */
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.3em;
+            }
+            label {
+                font-size: 0.8em;
+            }
+            input, select, button {
+                font-size: 0.8em;
+                padding: 7px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <form method="POST">
+        <h1>Patient Appointment</h1>
+        <label for="patient_id">Patient ID:</label>
+        <input type="number" name="patient_id" placeholder="Enter Patient ID" required>
+
+        <label for="patient_name">Patient Name:</label>
+        <input type="text" name="patient_name" placeholder="Enter Patient Name" required>
+
+        <label for="age">Age:</label>
+        <input type="number" name="age" placeholder="Enter Age" required>
+
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+            <option value="" disabled selected>Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+
+        <label for="appdate">Appointment Date:</label>
+        <input type="date" name="appdate" required>
+
+        <label for="appday">Appointment Day:</label>
+        <input type="text" name="appday" placeholder="Enter Appointment Day" required>
+
+        <label for="apptym">Appointment Time:</label>
+        <input type="time" name="apptym" required>
+
+        <label for="rsnappo">Appointment Reason:</label>
+        <select id="rsnappo" name="rsnappo" required>
+            <option value="" disabled selected>Select Reason</option>
+            <option value="Routine Checkup">Routine Checkup</option>
+            <option value="Emergency">Emergency</option>
+            <option value="Prescription Renewal">Prescription Renewal</option>
+            <option value="Vaccination">Vaccination</option>
+            <option value="Physical Therapy">Physical Therapy</option>
+            <option value="Fever/Flu Symptoms">Fever/Flu Symptoms</option>
+            <option value="Pain (e.g., back pain, joint pain)">Pain (e.g., back pain, joint pain)</option>
+            <option value="Eye/Ear Problems">Eye/Ear Problems</option>
+        </select>
+
+        <label for="conslt">Consultation Type:</label>
+        <select id="conslt" name="conslt" required>
+            <option value="" disabled selected>Select Type</option>
+            <option value="Online">Online</option>
+            <option value="In-Person">In-Person</option>
+        </select>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
