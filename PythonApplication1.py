@@ -44,23 +44,6 @@ def doctor():
 def appointmentcall():
     return render_template('appointmentcall.html')
 
-# login route
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        userid = request.form['userid']
-        password = request.form['password']
-        
-        # Check both admins and patients lists for valid credentials
-        for user in admins:
-            if user['userid'] == userid and user['password'] == password:
-                return redirect(url_for('dashboard'))  # Redirect to dashboard
-            else:
-                # flash('invalid')
-                return redirect(url_for('userscreen'))
-        return "Invalid userid or password!"
-    return render_template('login.html')
-
 # Dashboard
 @app.route('/dashboard')
 def dashboard():
@@ -81,6 +64,23 @@ def register():
         return f"Registered: {patient_name}"
     
     return render_template('register.html')  # Render the signup form
+
+# login route
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        userid = request.form['userid']
+        password = request.form['password']
+        
+        # Check both admins and patients lists for valid credentials
+        for user in admins:
+            if user['userid'] == userid and user['password'] == password:
+                return redirect(url_for('dashboard'))  # Redirect to dashboard
+            else:
+                # flash('invalid')
+                return redirect(url_for('userscreen'))
+        return "Invalid userid or password!"
+    return render_template('login.html')
 
 # Register Patient Route
 @app.route('/registerpatient', methods=['GET', 'POST'])
