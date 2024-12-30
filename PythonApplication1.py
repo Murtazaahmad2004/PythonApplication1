@@ -2,16 +2,6 @@ from flask import Flask, flash, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
-import mysql.connector
-
-connection = mysql.connector.connect(host="localhost", user="root", password="", database="hms")
-if connection.is_connected():
-    print('connection is successfully')
-else:
-    print('failed connection')
-
-connection.close()
-
 # User Classes
 class User:
     def __init__(self, userid, password):
