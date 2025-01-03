@@ -109,9 +109,7 @@
     <div class="registration-container">
         <h1>Register Patient</h1>
         <form method="POST" action="/registerpatient">
-            <label for="patient_id">Patient ID:</label>
-            <input type="number" name="patient_id" placeholder="Enter Patient ID" required>
-
+            <input type="hidden" name="action" value="register">
             <label for="first_name">First Name:</label>
             <input type="text" name="first_name" placeholder="Enter First Name" required>
 
@@ -121,8 +119,8 @@
             <label for="age">Age:</label>
             <input type="number" name="age" placeholder="Enter Age" required>
 
-            <label for="Contact">Contact Number:</label>
-            <input type="number" name="Contact" placeholder="Enter Contact Number" required>
+            <label for="contact">Contact Number:</label>
+            <input type="number" name="contact" placeholder="Enter Contact Number" required>
 
             <label for="gender">Gender:</label>
             <select id="gender" name="gender" required>

@@ -103,13 +103,11 @@
 </head>
 <body>
 
-<form method="POST">
+    <form method="POST" action="/wardbed">
     <h1>Ward and Bed Management</h1>
 
     <!-- Ward Information -->
-    <label for="ward_id">Ward ID:</label>
-    <input type="number" name="ward_id" placeholder="Enter Ward ID" required>
-
+    <input type="hidden" name="action" value="register">
     <label for="ward_name">Ward Name:</label>
     <input type="text" name="ward_name" placeholder="Enter Ward Name" required>
 
@@ -140,7 +138,7 @@
         <option value="Pediatric">Pediatric</option>
     </select>
 
-    <label for="patient_id">Patient Name:</label>
+    <label for="patient_id">Patient ID:</label>
     <input type="number" name="patient_id" placeholder="Enter Patient ID" required>
     
     <label for="booking_date">Booking Date:</label>

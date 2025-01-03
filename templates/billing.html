@@ -101,29 +101,26 @@
 </head>
 <body>
 
-<form method="POST">
+<form method="POST" action="/billing">
     <h1>Billing and Payments Management</h1>
-
+    <input type="hidden" name="action" value="register">
     <label for="patient_id">Patient ID:</label>
-    <input type="number" name="patient_id" required>
-
-    <label for="invoice_id">Invoice ID:</label>
-    <input type="number" name="invoice_id" required>
+    <input type="number" name="patient_id" placeholder="Enter Patient ID" required>
 
     <label for="bill_date">Bill Date:</label>
-    <input type="date" name="bill_date" required>
+    <input type="date" name="bill_date" placeholder="Enter Bill Date" required>
 
     <label for="total_amount">Total Amount:</label>
-    <input type="number" name="total_amount" required>
+    <input type="number" name="total_amount" placeholder="Enter Total Amount" required>
 
     <label for="discount">Discount:</label>
-    <input type="number" name="discount" required>
+    <input type="number" name="discount" placeholder="Enter Discount" required>
 
     <label for="tax_amount">Tax Amount:</label>
-    <input type="number" name="tax_amount" required>
+    <input type="number" name="tax_amount" placeholder="Enter Tax Amount" required>
 
     <label for="finl_amount">Final Amount:</label>
-    <input type="number" name="finl_amount" required>
+    <input type="number" name="finl_amount" placeholder="Enter Final Amount" required>
 
     <label for="payment_mtd">Payment Method:</label>
     <select id="payment_mtd" name="payment_mtd">
@@ -134,7 +131,7 @@
     </select>
 
     <label for="trns_id">Transaction ID(Only for online payments):</label>
-    <input type="number" name="trns_id" required>
+    <input type="text" name="trns_id" placeholder="Enter Transaction ID" required>
 
     <label for="paymt_sts">Payment Status:</label>
     <select id="paymt_sts" name="paymt_sts">
@@ -143,7 +140,7 @@
     </select>
 
     <label for="paymt_date">Payment Date:</label>
-    <input type="date" name="paymt_date" required>
+    <input type="date" name="paymt_date" placeholder="Enter Payment Date" required>
 
     <button type="submit">Submit</button>
 </form>

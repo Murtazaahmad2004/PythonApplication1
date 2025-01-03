@@ -92,7 +92,7 @@
         }
 
         form a {
-            color: white; /* Keep text white on the button */
+            color: black; /* Keep text white on the button */
             text-decoration: none;
         }
     </style>
@@ -101,16 +101,15 @@
     <div class="overlay"></div>
     <div class="signup-container">
         <h1>Sign Up</h1>
-        <form method="POST" action="/signup">
-            <label for="patient_id">Patient ID:</label>
-            <input type="number" name="patient_id" placeholder="Enter your Patient ID" required>
-
+        <form method="POST" action="/register">
+            <input type="hidden" name="action" value="register">
             <label for="patient_name">Patient Name:</label>
-            <input type="text" name="patient_name" placeholder="Enter your Name" required>
-
+            <input type="text" id="patient_name" name="patient_name" placeholder="Enter your Name" required>
+            
             <label for="idcardnumber">ID Card Number:</label>
-            <input type="number" name="idcardnumber" placeholder="Enter your ID Card Number" required>
-
+            <input type="text" id="idcardnumber" name="idcardnumber" placeholder="Enter your ID Card Number" required>
+            
+            
             <label for="gender">Gender:</label>
             <select id="gender" name="gender" required>
                 <option value="" disabled selected>Choose your gender</option>
@@ -118,7 +117,7 @@
                 <option value="Female">Female</option>
             </select>
 
-            <button type="submit"><a href="/login">Sign up</a></button>
+            <button type="submit">Register</button>
         </form>
     </div>
 </body>

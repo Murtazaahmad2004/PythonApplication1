@@ -223,8 +223,9 @@
     <div class="login-container">
         <h1>Welcome to Hospital Management System!</h1>
         <form method="POST" action="/login">
-            <label for="userid">Email:</label>
-            <input type="text" name="userid" placeholder="Enter your Email" required>
+            <input type="hidden" name="action" value="login">
+            <label for="userid">ID/Email(Email for Admin only):</label>
+            <input type="text" name="userid" placeholder="Enter your ID/Email" required>
             <label for="password">Password:</label>
             <input type="password" name="password" placeholder="Enter your Password" required>
             <button type="submit">Login</button>

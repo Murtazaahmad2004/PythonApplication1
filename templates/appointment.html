@@ -102,8 +102,9 @@
     </style>
 </head>
 <body>
-    <form method="POST">
+    <form method="POST" action="/appointment">
         <h1>Patient Appointment</h1>
+        <input type="hidden" name="action" value="register">
         <label for="patient_id">Patient ID:</label>
         <input type="number" name="patient_id" placeholder="Enter Patient ID" required>
 

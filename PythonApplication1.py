@@ -1,6 +1,23 @@
-from flask import Flask, flash, render_template, request, redirect, url_for
+import MySQLdb
+from django import db
+from flask import Flask, flash, jsonify, logging, render_template, request, redirect, session, url_for
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
+
+# Database Configuration
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_DB'] = 'hms'
+
+db = MySQLdb.connect(
+    host=app.config['MYSQL_HOST'],
+    user=app.config['MYSQL_USER'],
+    passwd=app.config['MYSQL_PASSWORD'],
+    db=app.config['MYSQL_DB']
+)
 
 # User Classes
 class User:
@@ -53,52 +70,143 @@ def dashboard():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        patient_id = request.form['patient_id']
-        patient_name = request.form['patient_name']
-        id = request.form['idcardnumber']
-        gender = request.form['gender']
-        
-        if not all([patient_id, patient_name, id, gender]):
-            return "All fields are required!"
-        # Here, you can save data to the database
-        return f"Registered: {patient_name}"
+        # Retrieve form data
+        action = request.form.get('action')  # Determines whether it's login or register
+        patient_name = request.form.get('patient_name')
+        gender = request.form.get('gender')
+        id_card = request.form.get('idcardnumber')
+
+        cursor = db.cursor()
+        try:
+            if action == 'register':  # Handle registration
+                # Check if all fields are provided
+                if not all([patient_name, gender, id_card]):
+                    error = "All fields are required for registration!"
+                    return render_template('register.html', error=error)
+
+                # Insert the user data into the database
+                cursor.execute("""
+                    INSERT INTO patient_register (Patient_Name, Gender, ID_Card_Number)
+                    VALUES (%s, %s, %s)
+                """, (patient_name, gender, id_card))
+                db.commit()
+                success_message = "User registered successfully! You can now log in."
+                return render_template('login.html', success=success_message)
+
+            elif action == 'login':  # Handle login
+                # Check if the ID card exists
+                cursor.execute("""
+                    SELECT * FROM patient_register WHERE ID_Card_Number = %s
+                """, (id_card,))
+                user = cursor.fetchone()
+
+                if user:
+                    # Login successful, save user info in session
+                    session['user_id'] = user[0]  # Assuming first column is the user's ID
+                    session['user_name'] = user[1]  # Assuming second column is Patient_Name
+                    return redirect(url_for('dashboard'))  # Redirect to dashboard
+                else:
+                    error = "Invalid ID Card Number. Please register first."
+                    return render_template('login.html', error=error)
+
+            else:
+                error = "Invalid action. Please try again."
+                return render_template('login.html', error=error)
+        except Exception as e:
+            return jsonify({'error': str(e)}), 400
+        finally:
+            cursor.close()
     
-    return render_template('register.html')  # Render the signup form
+    # Render the login/registration form for GET requests
+    return render_template('register.html')
 
 # login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        userid = request.form['userid']
-        password = request.form['password']
-        
-        # Check both admins and patients lists for valid credentials
-        for user in admins:
-            if user['userid'] == userid and user['password'] == password:
-                return redirect(url_for('dashboard'))  # Redirect to dashboard
-            else:
-                # flash('invalid')
-                return redirect(url_for('userscreen'))
-        return "Invalid userid or password!"
-    return render_template('login.html')
+        # Retrieve form data
+        action = request.form.get('action')  # Determines whether it's login or register
+        userid = request.form.get('userid')
+        password = request.form.get('password')
 
+        cursor = db.cursor()
+        try:
+            if action == 'login':  # Handle registration
+                # Check if all fields are provided
+                if not all([userid, password]):
+                    error = "All fields are required for registration!"
+                    return render_template('login.html', error=error)
+
+                # Insert the user data into the database
+                cursor.execute("""
+                    INSERT INTO login_user (User_ID, Password)
+                    VALUES (%s, %s)
+                """, (userid, password))
+                db.commit()
+                success_message = "User loggedin successfully!"
+                return render_template('dashboard.html', success=success_message)
+
+            elif action == 'login':  # Handle login
+                # Check if the ID card exists
+                cursor.execute("""
+                    SELECT * FROM login_user WHERE User_ID = %s
+                """, (userid))
+                user = cursor.fetchone()
+
+                if user:
+                    # Login successful, save user info in session
+                    session['userid'] = user[0]  # Assuming first column is the user's ID
+                    session['password'] = user[1]  # Assuming second column is userid
+                    return redirect(url_for('dashboard'))  # Redirect to dashboard
+                else:
+                    error = "Invalid User ID. Please register first."
+                    return render_template('login.html', error=error)
+
+            else:
+                error = "Invalid action. Please try again."
+                return render_template('login.html', error=error)
+        except Exception as e:
+            return jsonify({'error': str(e)}), 400
+        finally:
+            cursor.close()
+    
+    # Render the login/registration form for GET requests
+    return render_template('login.html')
+    
 # Register Patient Route
 @app.route('/registerpatient', methods=['GET', 'POST'])
 def register_patient():
     if request.method == 'POST':
-        # Get data from the form
-        patient_id = request.form.get('patient_id')
+        # Retrieve form data
         first_name = request.form.get('first_name')
         last_name = request.form.get('last_name')
         age = request.form.get('age')
-        contact = request.form.get('contact')
         gender = request.form.get('gender')
+        contact = request.form.get('contact')
+
         # Validate the fields
-        if not all([patient_id, first_name, last_name, age, gender, contact]):
-            return "All fields are required!"
-        
-        # If everything is fine, save the data or process it
-        return f"Patient Registered: {first_name} {last_name}"
+        if not all([first_name, last_name, age, gender, contact]):
+            error = "All fields are required for registration!"
+            return render_template('registerpatient.html', error=error)
+
+        # Insert the patient data into the database
+        cursor = db.cursor()
+        try:
+            cursor.execute("""
+                INSERT INTO register_patient (First_Name, Last_Name, Age, Gender, Contact)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (first_name, last_name, age, gender, contact))
+            db.commit()
+            success_message = "Patient registered successfully!"
+            return success_message
+
+        except Exception as e:
+            error = f"Failed to register patient. Error: {str(e)}"
+            print(error)  # Log the error
+            return error
+
+        finally:
+            cursor.close()
 
     # Render the form for GET request
     return render_template('registerpatient.html')
@@ -107,8 +215,7 @@ def register_patient():
 @app.route('/appointment', methods=['GET', 'POST'])
 def appointment_patient():
     if request.method == 'POST':
-        # Get data from the form
-        patient_id = request.form.get('patient_id')
+        # Retrieve form data
         patient_name = request.form.get('patient_name')
         age = request.form.get('age')
         gender = request.form.get('gender')
@@ -117,37 +224,73 @@ def appointment_patient():
         appotym = request.form.get('apptym')
         rsnappo = request.form.get('rsnappo')
         constyp = request.form.get('conslt')
-        # Validate the fields
-        if not all([patient_id, patient_name, age, gender, appodate, appoday, appotym, rsnappo, constyp]):
-            return "All fields are required!"
-        
-        # If everything is fine, save the data or process it
-        return f"Patient Appointment: {patient_id} {patient_name}"
 
-    # Render the form for GET request
+        # Validate the fields
+        if not all([patient_name, age, gender, appodate, appoday, appotym, rsnappo, constyp]):
+            error = "All fields are required for registration!"
+            return render_template('appointment.html', error=error)
+
+        # Insert the patient data into the database
+        cursor = db.cursor()
+        try:
+            cursor.execute("""
+                INSERT INTO appointment (Patient_Name, Age, Gender, Appointment_Date, Appointment_Day, Appointment_Time, Reason_of_Appointment, Consultation_Type)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (patient_name, age, gender, appodate, appoday, appotym, rsnappo, constyp))
+            db.commit()
+            success_message = "Patient appointment successfully!"
+            return success_message
+
+        except Exception as e:
+            error = f"Failed to patient appointment. Error: {str(e)}"
+            print(error)  # Log the error
+            return error
+
+        finally:
+            cursor.close()
+
+        # Render the form for GET request
     return render_template('appointment.html')
 
 # ward bed Route
 @app.route('/wardbed', methods=['GET', 'POST'])
 def ward_bed():
     if request.method == 'POST':
-        # Get data from the form
-        ward_id = request.form.get('ward_id')
+        # Retrieve form data
         ward_name = request.form.get('ward_name')
-        ward_typ = request.form.get('ward_typ')
+        ward_type = request.form.get('ward_type')
         floor_no = request.form.get('floor_no')
         bed_id = request.form.get('bed_id')
-        bed_typ = request.form.get('bed_typ')
+        bed_type = request.form.get('bed_type')
         patient_id = request.form.get('patient_id')
-        bkdate = request.form.get('bkdate')
-        dscdate = request.form.get('dscdate')
-        resvsts = request.form.get('resvsts')
+        booking_date = request.form.get('booking_date')
+        discharge_date = request.form.get('dscdate')
+        reservation_status = request.form.get('resvsts')
+
         # Validate the fields
-        if not all([ward_id, ward_name, ward_typ, floor_no, bed_id, bed_typ, patient_id, bkdate, dscdate, resvsts]):
-            return "All fields are required!"
-        
-        # If everything is fine, save the data or process it
-        return f"ward Registered: {ward_id} {ward_name}"
+        if not all([ward_name, ward_type, floor_no, bed_id, bed_type, patient_id, booking_date, discharge_date, reservation_status]):
+            error = "All fields are required for registration!"
+            return error
+
+        # Insert the patient data into the database
+        cursor = db.cursor()
+        try:
+            cursor.execute("""
+                INSERT INTO ward_bed (Ward_Name, Ward_Type, Floor_No, Bed_ID, Bed_Type, Patient_ID, Booking_Date, Discharge_Date, Reserve_Status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (ward_name, ward_type, floor_no, bed_id, bed_type, patient_id, booking_date, discharge_date, reservation_status))
+            db.commit()
+            success_message = "Ward Booked Successfully!"
+            return success_message
+
+        except Exception as e:
+            db.rollback()
+            error = f"Failed to book a ward. Error: {str(e)}"
+            print(error)  # Log the error for debugging
+            return error
+
+        finally:
+            cursor.close()
 
     # Render the form for GET request
     return render_template('wardbed.html')
@@ -156,7 +299,7 @@ def ward_bed():
 @app.route('/pharmacy', methods=['GET', 'POST'])
 def pharmacy():
     if request.method == 'POST':
-        # Get data from the form
+        # Retrieve form data
         medicine_id = request.form.get('medicine_id')
         medicine_name = request.form.get('medicine_name')
         brand = request.form.get('brand_name')
@@ -166,23 +309,62 @@ def pharmacy():
         expiry_date = request.form.get('expiry_date')
         batch_no = request.form.get('batch_no')
         Price = request.form.get('Price_per_Unit')
+
         # Validate the fields
         if not all([medicine_id, medicine_name, brand, dosage, strength, quantity, expiry_date, batch_no, Price]):
-            return "All fields are required!"
-        
-        # If everything is fine, save the data or process it
-        return f"Pharmacy Registered: {medicine_id} {medicine_name}"
+            error = "All fields are required for Pharamacy!"
+            return error
 
-    # Render the form for GET request
+        # Insert the patient data into the database
+        cursor = db.cursor()
+        try:
+            cursor.execute("""
+                INSERT INTO pharamacy (Medicine_ID, Medicine_Name, Brand_Name, Dosage_Form, Strength, Quantity_In_Stock, Expiry_Date, Batch_No, Price_Per_Unit)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (medicine_id, medicine_name, brand, dosage, strength, quantity, expiry_date, batch_no, Price))
+            db.commit()
+            success_message = "Insert Successfully!"
+            return success_message
+
+        except Exception as e:
+            db.rollback()
+            error = f"Failed to Insert. Error: {str(e)}"
+            print(error)  # Log the error for debugging
+            return error
+
+        finally:
+            cursor.close()
+
+        # Render the form for GET request
     return render_template('pharmacy.html')
+    # if request.method == 'POST':
+    #     # Get data from the form
+    #     medicine_id = request.form.get('medicine_id')
+    #     medicine_name = request.form.get('medicine_name')
+    #     brand = request.form.get('brand_name')
+    #     dosage = request.form.get('dosage_form')
+    #     strength = request.form.get('strength')
+    #     quantity = request.form.get('Quantity_in_Stock')
+    #     expiry_date = request.form.get('expiry_date')
+    #     batch_no = request.form.get('batch_no')
+    #     Price = request.form.get('Price_per_Unit')
+    #     # Validate the fields
+    #     if not all([medicine_id, medicine_name, brand, dosage, strength, quantity, expiry_date, batch_no, Price]):
+    #         return "All fields are required!"
+        
+    #     # If everything is fine, save the data or process it
+    #     return f"Pharmacy Registered: {medicine_id} {medicine_name}"
+
+    # # Render the form for GET request
+    # return render_template('pharmacy.html')
 
 # billing Route
 @app.route('/billing', methods=['GET', 'POST'])
 def billing():
     if request.method == 'POST':
-        # Get data from the form
+        # Retrieve form data
         patient_id = request.form.get('patient_id')
-        invoice_id = request.form.get('invoice_id')
+        # invoice_id = request.form.get('invoice_id')
         bill_date = request.form.get('bill_date')
         total_amount = request.form.get('total_amount')
         discount = request.form.get('discount')
@@ -192,14 +374,32 @@ def billing():
         trns_id = request.form.get('trns_id')
         paymt_sts = request.form.get('paymt_sts')
         paymt_date = request.form.get('paymt_date')
-        # Validate the fields
-        if not all([patient_id, invoice_id, bill_date, total_amount, discount, tax_amount, finl_amount, payment_mtd, trns_id, paymt_sts, paymt_date]):
-            return "All fields are required!"
-        
-        # If everything is fine, save the data or process it
-        return f"Billing Registered: {patient_id} {invoice_id}"
 
-    # Render the form for GET request
+        # Validate the fields
+        if not all([patient_id, bill_date, total_amount, discount, tax_amount, finl_amount, payment_mtd, trns_id, paymt_sts, paymt_date]):
+            error = "All fields are required for billing!"
+            return error
+
+        # Insert the patient data into the database
+        cursor = db.cursor()
+        try:
+            cursor.execute("""
+                INSERT INTO billing (Patient_ID, Bill_Date, Total_Amount, Discount, Tax_Amount, Final_Amount, Payment_Method, Transaction_ID, Payment_Status, Payment_Date)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (patient_id, bill_date, total_amount, discount, tax_amount, finl_amount, payment_mtd, trns_id, paymt_sts, paymt_date))
+            db.commit()
+            success_message = "Billing Successfully!"
+            return success_message
+
+        except Exception as e:
+            db.rollback()
+            error = f"Failed to Billing. Error: {str(e)}"
+            print(error)  # Log the error for debugging
+            return error
+
+        finally:
+            cursor.close()
+
     return render_template('billing.html')
 
 # online appo Route
