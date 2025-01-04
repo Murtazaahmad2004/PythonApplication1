@@ -35,9 +35,9 @@ class Admin(User):
 
 # Sample users
 patients = [Patient('123', '123')]
-admins = [
-    {'userid': 'admin@gmail.com', 'password': '1234'}
-]
+# admins = [
+#     {'userid': 'admin@gmail.com', 'password': '1234'}
+# ]
 
 # Routes
 
@@ -75,20 +75,22 @@ def register():
         patient_name = request.form.get('patient_name')
         gender = request.form.get('gender')
         id_card = request.form.get('idcardnumber')
+        password = request.form.get('confirmpass')
+        confirmpass = request.form.get('confirmpass')
 
         cursor = db.cursor()
         try:
             if action == 'register':  # Handle registration
                 # Check if all fields are provided
-                if not all([patient_name, gender, id_card]):
+                if not all([patient_name, gender, id_card, password, confirmpass]):
                     error = "All fields are required for registration!"
                     return render_template('register.html', error=error)
 
                 # Insert the user data into the database
                 cursor.execute("""
-                    INSERT INTO patient_register (Patient_Name, Gender, ID_Card_Number)
-                    VALUES (%s, %s, %s)
-                """, (patient_name, gender, id_card))
+                    INSERT INTO patient_register (Patient_Name, Gender, ID_Card_Number, Password, Confirm_Password)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (patient_name, gender, id_card, password, confirmpass))
                 db.commit()
                 success_message = "User registered successfully! You can now log in."
                 return render_template('login.html', success=success_message)
@@ -139,17 +141,17 @@ def login():
 
                 # Insert the user data into the database
                 cursor.execute("""
-                    INSERT INTO login_user (User_ID, Password)
+                    INSERT INTO login_user1 (Patient_ID, Password)
                     VALUES (%s, %s)
                 """, (userid, password))
                 db.commit()
                 success_message = "User loggedin successfully!"
-                return render_template('dashboard.html', success=success_message)
+                return render_template('userscreen.html', success=success_message)
 
             elif action == 'login':  # Handle login
                 # Check if the ID card exists
                 cursor.execute("""
-                    SELECT * FROM login_user WHERE User_ID = %s
+                    SELECT * FROM login_user WHERE Patient_ID = %s
                 """, (userid))
                 user = cursor.fetchone()
 
@@ -157,7 +159,7 @@ def login():
                     # Login successful, save user info in session
                     session['userid'] = user[0]  # Assuming first column is the user's ID
                     session['password'] = user[1]  # Assuming second column is userid
-                    return redirect(url_for('dashboard'))  # Redirect to dashboard
+                    return redirect(url_for('userscreen'))  # Redirect to dashboard
                 else:
                     error = "Invalid User ID. Please register first."
                     return render_template('login.html', error=error)
@@ -172,7 +174,7 @@ def login():
     
     # Render the login/registration form for GET requests
     return render_template('login.html')
-    
+
 # Register Patient Route
 @app.route('/registerpatient', methods=['GET', 'POST'])
 def register_patient():
@@ -337,26 +339,6 @@ def pharmacy():
 
         # Render the form for GET request
     return render_template('pharmacy.html')
-    # if request.method == 'POST':
-    #     # Get data from the form
-    #     medicine_id = request.form.get('medicine_id')
-    #     medicine_name = request.form.get('medicine_name')
-    #     brand = request.form.get('brand_name')
-    #     dosage = request.form.get('dosage_form')
-    #     strength = request.form.get('strength')
-    #     quantity = request.form.get('Quantity_in_Stock')
-    #     expiry_date = request.form.get('expiry_date')
-    #     batch_no = request.form.get('batch_no')
-    #     Price = request.form.get('Price_per_Unit')
-    #     # Validate the fields
-    #     if not all([medicine_id, medicine_name, brand, dosage, strength, quantity, expiry_date, batch_no, Price]):
-    #         return "All fields are required!"
-        
-    #     # If everything is fine, save the data or process it
-    #     return f"Pharmacy Registered: {medicine_id} {medicine_name}"
-
-    # # Render the form for GET request
-    # return render_template('pharmacy.html')
 
 # billing Route
 @app.route('/billing', methods=['GET', 'POST'])
@@ -406,51 +388,87 @@ def billing():
 @app.route('/onlineappointment', methods=['GET', 'POST'])
 def onlineappointment():
     if request.method == 'POST':
-        # Get data from the form
+        # Retrieve form data
         patient_id = request.form.get('patient_id')
         patient_name = request.form.get('patient_name')
         doctor_id = request.form.get('doctor_id')
         doctor_name = request.form.get('doctor_name')
         doctor_spe = request.form.get('doctor_spe')
         rsndis = request.form.get('rsndis')
+
         # Validate the fields
         if not all([patient_id, patient_name, doctor_id, doctor_name, doctor_spe, rsndis]):
-            return "All fields are required!"
-        
-        # If everything is fine, save the data or process it
-        return f"Online Appointment: {patient_id} {patient_name} {doctor_id} {doctor_name}"
+            error = "All fields are required for Appointment!"
+            return error
 
-    # Render the form for GET request
+        # Insert the patient data into the database
+        cursor = db.cursor()
+        try:
+            cursor.execute("""
+                INSERT INTO onlineappointment (Patient_ID, Patient_Name, Doctor_ID, Doctor_Name, Doctor_Specialization, Reason_of_Dieases)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (patient_id, patient_name, doctor_id, doctor_name, doctor_spe, rsndis))
+            db.commit()
+            success_message = "Online Appointment Successfully!"
+            return success_message
+
+        except Exception as e:
+            db.rollback()
+            error = f"Failed to Online Appointment. Error: {str(e)}"
+            print(error)  # Log the error for debugging
+            return error
+
+        finally:
+            cursor.close()
+        # Render the form for GET request
     return render_template('onlineappointment.html')
-
-# medical rec Route
-@app.route('/medicalrec', methods=['GET', 'POST'])
-def medical_rec():
-    if request.method == 'POST':
-        # Get data from the form
-        patient_id = request.form.get('patient_id')
-        # Validate the fields
-        if not all([patient_id]):
-            return "All fields are required!"
-        
-        # If everything is fine, save the data or process it
-        return f"Medical Record: {patient_id}"
-
-    # Render the form for GET request
-    return render_template('medicalrec.html')
 
 # billing and payment Route
 @app.route('/billingpayment', methods=['GET', 'POST'])
 def billing_payment():
     if request.method == 'POST':
-        # Get data from the form
+        # Get the patient ID from the form
         patient_id = request.form.get('patient_id')
-        # Validate the fields
-        if not all([patient_id]):
-            return "All fields are required!"
-        
-        # If everything is fine, save the data or process it
-        return f"Payments: {patient_id}"
+
+        # Validate the input
+        if not patient_id:
+            return render_template('billingpayment.html', error="Patient ID is required!")
+
+        # Fetch the billing data from the database
+        cursor = db.cursor()
+        try:
+            cursor.execute("""
+                SELECT * FROM billing WHERE Patient_ID = %s
+            """, (patient_id,))
+            billing_data = cursor.fetchone()
+
+            if billing_data:
+                # Assuming the columns in the "billing" table are:
+                # [Patient_ID, Bill_Date, Total_Amount, Discount, Tax_Amount, Final_Amount, Payment_Method, Transaction_ID, Payment_Status, Payment_Date]
+                billing_dict = {
+                    'Patient_ID': billing_data[0],
+                    'Bill_Date': billing_data[1],
+                    'Total_Amount': billing_data[2],
+                    'Discount': billing_data[3],
+                    'Tax_Amount': billing_data[4],
+                    'Final_Amount': billing_data[5],
+                    'Payment_Method': billing_data[6],
+                    'Transaction_ID': billing_data[7],
+                    'Payment_Status': billing_data[8],
+                    'Payment_Date': billing_data[9]
+                }
+                return render_template('billingpayment.html', billing=billing_dict)
+
+            else:
+                return render_template('billingpayment.html', error="No billing record found for this Patient ID.")
+
+        except Exception as e:
+            error = f"Failed to fetch billing data. Error: {str(e)}"
+            print(error)  # Log the error for debugging
+            return render_template('billingpayment.html', error=error)
+
+        finally:
+            cursor.close()
 
     # Render the form for GET request
     return render_template('billingpayment.html')

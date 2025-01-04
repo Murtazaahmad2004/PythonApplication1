@@ -1,111 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Billing And Payments</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing Payment</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-            color: #333;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
         }
-
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: -1;
-        }
-
-        .login-container {
-            width: 90%;
-            max-width: 400px;
-            padding: 30px;
-            border-radius: 10px;
-            background-color: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-
-        .login-container h1 {
-            margin-bottom: 20px;
-            font-size: 1.8em;
-            color: #4CAF50;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        form label {
-            align-self: flex-start;
-            margin: 10px 0 5px;
-            font-size: 1em;
-            color: #555;
-        }
-
-        form input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1em;
-        }
-
-        form button {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
+        header {
             background-color: #4CAF50;
-            color: #fff;
-            font-size: 1em;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        form {
+            margin-bottom: 30px;
+        }
+        label {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 14px;
+            width: 300px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
         }
-
-        form button:hover {
+        button:hover {
             background-color: #45a049;
-            transform: scale(1.03);
         }
-
-        form a {
-            margin-top: 15px;
-            text-decoration: none;
-            color: #007BFF;
-            font-size: 0.9em;
-            transition: color 0.3s ease;
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
         }
-
-        form a:hover {
-            color: #0056b3;
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .error {
+            color: red;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
-    <div class="overlay"></div>
-    <div class="login-container">
-        <h1>Billing And Payments</h1>
-        <form method="POST">
-            <label for="patient_id">Patient ID:</label>
-            <input type="patient_id" name="patient_id" placeholder="Enter Patient ID" required>
-            <button type="find">Find</button>
-        </form>
-    </div>
+
+<header>
+    <h1>Billing and Payment</h1>
+</header>
+
+<div class="container">
+    <!-- Form to search for billing data -->
+    <form method="POST">
+        <label for="patient_id">Enter Patient ID:</label>
+        <input type="text" id="patient_id" name="patient_id" required>
+        <button type="submit">Find</button>
+    </form>
+
+    <!-- Display error message -->
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <!-- Display billing data -->
+    {% if billing %}
+    <h2>Billing Details</h2>
+    <ul>
+        <li><strong>Patient ID:</strong> {{ billing.Patient_ID }}</li>
+        <li><strong>Bill Date:</strong> {{ billing.Bill_Date }}</li>
+        <li><strong>Total Amount:</strong> {{ billing.Total_Amount }}</li>
+        <li><strong>Discount:</strong> {{ billing.Discount }}</li>
+        <li><strong>Tax Amount:</strong> {{ billing.Tax_Amount }}</li>
+        <li><strong>Final Amount:</strong> {{ billing.Final_Amount }}</li>
+        <li><strong>Payment Method:</strong> {{ billing.Payment_Method }}</li>
+        <li><strong>Transaction ID:</strong> {{ billing.Transaction_ID }}</li>
+        <li><strong>Payment Status:</strong> {{ billing.Payment_Status }}</li>
+        <li><strong>Payment Date:</strong> {{ billing.Payment_Date }}</li>
+    </ul>
+    {% endif %}
+</div>
 </body>
 </html>
