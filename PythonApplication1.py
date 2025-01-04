@@ -128,50 +128,39 @@ def login():
     if request.method == 'POST':
         # Retrieve form data
         action = request.form.get('action')  # Determines whether it's login or register
-        userid = request.form.get('userid')
+        userid = request.form.get('userid')  # User ID (Email for admin or patient ID for regular users)
         password = request.form.get('password')
 
         cursor = db.cursor()
         try:
-            if action == 'login':  # Handle registration
-                # Check if all fields are provided
-                if not all([userid, password]):
-                    error = "All fields are required for registration!"
-                    return render_template('login.html', error=error)
+            if action == 'login':  # Handle login
 
-                # Insert the user data into the database
-                cursor.execute("""
-                    INSERT INTO login_user1 (Patient_ID, Password)
-                    VALUES (%s, %s)
-                """, (userid, password))
-                db.commit()
-                success_message = "User loggedin successfully!"
-                return render_template('userscreen.html', success=success_message)
+                # Check if the entered credentials are for admin
+                if userid == 'admin@gmail.com' and password == '1234':
+                    return redirect(url_for('dashboard'))  # Redirect to admin portal
 
-            elif action == 'login':  # Handle login
-                # Check if the ID card exists
-                cursor.execute("""
-                    SELECT * FROM login_user WHERE Patient_ID = %s
-                """, (userid))
+                # For non-admin users, check if the user exists in the database
+                cursor.execute("""SELECT * FROM login_user1 WHERE Patient_ID = %s AND Password = %s""", (userid, password))
                 user = cursor.fetchone()
 
                 if user:
                     # Login successful, save user info in session
-                    session['userid'] = user[0]  # Assuming first column is the user's ID
-                    session['password'] = user[1]  # Assuming second column is userid
-                    return redirect(url_for('userscreen'))  # Redirect to dashboard
+                    # session['userid'] = user[0]  # Assuming first column is the user's ID
+                    # session['password'] = user[1]  # Assuming second column is the password
+                    return redirect(url_for('userscreen'))  # Redirect to user screen
                 else:
-                    error = "Invalid User ID. Please register first."
+                    error = "Invalid User ID or Password. Please try again."
                     return render_template('login.html', error=error)
 
             else:
                 error = "Invalid action. Please try again."
                 return render_template('login.html', error=error)
+
         except Exception as e:
             return jsonify({'error': str(e)}), 400
         finally:
             cursor.close()
-    
+
     # Render the login/registration form for GET requests
     return render_template('login.html')
 
