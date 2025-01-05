@@ -1,3 +1,4 @@
+import datetime
 import MySQLdb
 from django import db
 from flask import Flask, flash, jsonify, logging, render_template, request, redirect, session, url_for
@@ -140,14 +141,20 @@ def login():
                     return redirect(url_for('dashboard'))  # Redirect to admin portal
 
                 # For non-admin users, check if the user exists in the database
-                cursor.execute("""SELECT * FROM login_user1 WHERE Patient_ID = %s AND Password = %s""", (userid, password))
+                cursor.execute("""SELECT * FROM patient_register WHERE Patient_ID = %s AND Password = %s""", (userid, password))
                 user = cursor.fetchone()
 
                 if user:
-                    # Login successful, save user info in session
-                    # session['userid'] = user[0]  # Assuming first column is the user's ID
-                    # session['password'] = user[1]  # Assuming second column is the password
-                    return redirect(url_for('userscreen'))  # Redirect to user screen
+                    # Save login data into login_user1 table
+                    login_time = datetime.datetime.now()
+                    cursor.execute("""
+                        INSERT INTO login_user1 (Patient_ID, Password, Login_Time) 
+                        VALUES (%s, %s, %s)
+                    """, (userid, password, login_time))
+                    db.commit()  # Commit the transaction
+
+                    # Login successful, redirect to user screen
+                    return redirect(url_for('userscreen'))
                 else:
                     error = "Invalid User ID or Password. Please try again."
                     return render_template('login.html', error=error)
