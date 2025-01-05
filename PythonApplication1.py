@@ -34,12 +34,6 @@ class Admin(User):
     def __init__(self, userid, password):
         super().__init__(userid, password)
 
-# Sample users
-patients = [Patient('123', '123')]
-# admins = [
-#     {'userid': 'admin@gmail.com', 'password': '1234'}
-# ]
-
 # Routes
 
 # Homepage
