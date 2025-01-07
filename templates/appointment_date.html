@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        form {
+            margin-bottom: 30px;
+        }
+        label {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        input[type="date"] {
+            padding: 10px;
+            font-size: 14px;
+            width: 300px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .error {
+            color: red;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Appointment Details</h1>
+</header>
+
+<div class="container">
+    <!-- Form to search for appointment data -->
+    <form method="POST">
+        <label for="appointment_date">Enter Appointment Date:</label>
+        <input type="date" id="appointment_date" name="appointment_date" required>
+        <button type="submit">Find</button>
+    </form>
+
+    <!-- Display error message -->
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <!-- Display appointment data -->
+    {% if appointment %}
+    <h2>Appointment Details</h2>
+    <ul>
+        <li><strong>Patient Name:</strong> {{ appointment.Patient_Name }}</li>
+        <li><strong>Age:</strong> {{ appointment.Age }}</li>
+        <li><strong>Gender:</strong> {{ appointment.Gender }}</li>
+        <li><strong>Appointment Date:</strong> {{ appointment.Appointment_Date }}</li>
+        <li><strong>Appointment Day:</strong> {{ appointment.Appointment_Day }}</li>
+        <li><strong>Appointment Time:</strong> {{ appointment.Appointment_Time }}</li>
+        <li><strong>Reason of Appointment:</strong> {{ appointment.Reason_of_Appointment }}</li>
+        <li><strong>Consultation Type:</strong> {{ appointment.Consultation_Type }}</li>
+    </ul>
+    {% endif %}
+</div>
+</body>
+</html>

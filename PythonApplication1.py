@@ -165,7 +165,7 @@ def login():
     # Render the login/registration form for GET requests
     return render_template('login.html')
 
-# Register Patient Route
+# Patient Register Route
 @app.route('/registerpatient', methods=['GET', 'POST'])
 def register_patient():
     if request.method == 'POST':
@@ -203,7 +203,7 @@ def register_patient():
     # Render the form for GET request
     return render_template('registerpatient.html')
 
-# Appointment Patient Route
+# Appointment Route
 @app.route('/appointment', methods=['GET', 'POST'])
 def appointment_patient():
     if request.method == 'POST':
@@ -379,7 +379,6 @@ def billing():
 def onlineappointment():
     if request.method == 'POST':
         # Retrieve form data
-        patient_id = request.form.get('patient_id')
         patient_name = request.form.get('patient_name')
         doctor_id = request.form.get('doctor_id')
         doctor_name = request.form.get('doctor_name')
@@ -387,7 +386,7 @@ def onlineappointment():
         rsndis = request.form.get('rsndis')
 
         # Validate the fields
-        if not all([patient_id, patient_name, doctor_id, doctor_name, doctor_spe, rsndis]):
+        if not all([patient_name, doctor_id, doctor_name, doctor_spe, rsndis]):
             error = "All fields are required for Appointment!"
             return error
 
@@ -395,9 +394,9 @@ def onlineappointment():
         cursor = db.cursor()
         try:
             cursor.execute("""
-                INSERT INTO onlineappointment (Patient_ID, Patient_Name, Doctor_ID, Doctor_Name, Doctor_Specialization, Reason_of_Dieases)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            """, (patient_id, patient_name, doctor_id, doctor_name, doctor_spe, rsndis))
+                INSERT INTO onlineappointment (Patient_Name, Doctor_ID, Doctor_Name, Doctor_Specialization, Reason_of_Dieases)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (patient_name, doctor_id, doctor_name, doctor_spe, rsndis))
             db.commit()
             success_message = "Online Appointment Successfully!"
             return success_message
@@ -413,7 +412,7 @@ def onlineappointment():
         # Render the form for GET request
     return render_template('onlineappointment.html')
 
-# billing and payment Route
+# fetch billing and payment data
 @app.route('/billingpayment', methods=['GET', 'POST'])
 def billing_payment():
     if request.method == 'POST':
@@ -462,6 +461,54 @@ def billing_payment():
 
     # Render the form for GET request
     return render_template('billingpayment.html')
+
+# fetch appointment data
+@app.route('/appointment_date', methods=['GET', 'POST'])
+def appointment_date():
+    if request.method == 'POST':
+        # Get the appointment date from the form
+        appointment_date = request.form.get('appointment_date')
+
+        # Validate the input
+        if not appointment_date:
+            return render_template('appointment_date.html', error="Appointment Date is required!")
+
+        # Fetch the appointment data from the database
+        cursor = db.cursor()
+        try:
+            cursor.execute("""
+                SELECT Patient_Name, Age, Gender, Appointment_Date, Appointment_Day, Appointment_Time, Reason_of_Appointment, Consultation_Type
+                FROM appointment WHERE Appointment_Date = %s
+            """, (appointment_date,))
+            appointment_data = cursor.fetchone()
+
+            if appointment_data:
+                # Map the fetched data to a dictionary for easier handling in the template
+                appointment_dict = {
+                    'Patient_Name': appointment_data[0],
+                    'Age': appointment_data[1],
+                    'Gender': appointment_data[2],
+                    'Appointment_Date': appointment_data[3],
+                    'Appointment_Day': appointment_data[4],
+                    'Appointment_Time': appointment_data[5],
+                    'Reason_of_Appointment': appointment_data[6],
+                    'Consultation_Type': appointment_data[7],
+                }
+                return render_template('appointment_date.html', appointment=appointment_dict)
+
+            else:
+                return render_template('appointment_date.html', error="No appointment record found for this date.")
+
+        except Exception as e:
+            error = f"Failed to fetch appointment data. Error: {str(e)}"
+            print(error)  # Log the error for debugging
+            return render_template('appointment_date.html', error=error)
+
+        finally:
+            cursor.close()
+
+    # Render the form for GET request
+    return render_template('appointment_date.html')
 
 # Run the app
 if __name__ == '__main__':

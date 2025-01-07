@@ -21,7 +21,7 @@
             height: 100vh;
             background: linear-gradient(to bottom, #4facfe, #00f2fe); /*Gradient background*/
             color: #333;
-            overflow-y: hidden;
+            /* overflow-y: hidden; */
         }
 
         /* Form Container */
@@ -31,13 +31,14 @@
             justify-content: space-around;
             width: 95%;
             max-width: 400px;
-            height: 100vh; /* Occupy nearly full height of the viewport */
+            height: 80vh; /* Adjust the height here */
             background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+            overflow-y: auto; /* Add scroll if content overflows */
         }
-
+        
         /* Header Styling */
         h1 {
             font-size: 1.5em;
@@ -105,12 +106,10 @@
     <form method="POST" action="/appointment">
         <h1>Patient Appointment</h1>
         <input type="hidden" name="action" value="register">
-        <label for="patient_id">Patient ID:</label>
-        <input type="number" name="patient_id" placeholder="Enter Patient ID" required>
 
         <label for="patient_name">Patient Name:</label>
         <input type="text" name="patient_name" placeholder="Enter Patient Name" required>
-
+        
         <label for="age">Age:</label>
         <input type="number" name="age" placeholder="Enter Age" required>
 
