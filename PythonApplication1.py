@@ -211,6 +211,7 @@ def appointment_patient():
         patient_name = request.form.get('patient_name')
         age = request.form.get('age')
         gender = request.form.get('gender')
+        appoid = request.form.get('appo_id')
         appodate = request.form.get('appdate')
         appoday = request.form.get('appday')
         appotym = request.form.get('apptym')
@@ -218,7 +219,7 @@ def appointment_patient():
         constyp = request.form.get('conslt')
 
         # Validate the fields
-        if not all([patient_name, age, gender, appodate, appoday, appotym, rsnappo, constyp]):
+        if not all([patient_name, age, gender, appoid, appodate, appoday, appotym, rsnappo, constyp]):
             error = "All fields are required for registration!"
             return render_template('appointment.html', error=error)
 
@@ -226,9 +227,9 @@ def appointment_patient():
         cursor = db.cursor()
         try:
             cursor.execute("""
-                INSERT INTO appointment (Patient_Name, Age, Gender, Appointment_Date, Appointment_Day, Appointment_Time, Reason_of_Appointment, Consultation_Type)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, (patient_name, age, gender, appodate, appoday, appotym, rsnappo, constyp))
+                INSERT INTO appointment (Patient_Name, Age, Gender, Appointment_ID, Appointment_Date, Appointment_Day, Appointment_Time, Reason_of_Appointment, Consultation_Type)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (patient_name, age, gender, appoid, appodate, appoday, appotym, rsnappo, constyp))
             db.commit()
             return render_template('appointment.html', success=True)
 
