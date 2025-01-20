@@ -80,7 +80,7 @@
     <!-- Form to search for billing data -->
     <form method="POST">
         <label for="patient_id">Enter Patient ID:</label>
-        <input type="text" id="patient_id" name="patient_id" required>
+        <input type="text" id="patient_id" name="patient_id" placeholder="Enter Patient ID">
         <button type="submit">Find</button>
     </form>
 
@@ -90,9 +90,10 @@
     {% endif %}
 
     <!-- Display billing data -->
-    {% if billing %}
+    {% if billing_list %}
     <h2>Billing Details</h2>
     <ul>
+        {% for billing in billing_list %}
         <li><strong>Patient ID:</strong> {{ billing.Patient_ID }}</li>
         <li><strong>Bill Date:</strong> {{ billing.Bill_Date }}</li>
         <li><strong>Total Amount:</strong> {{ billing.Total_Amount }}</li>
@@ -103,6 +104,8 @@
         <li><strong>Transaction ID:</strong> {{ billing.Transaction_ID }}</li>
         <li><strong>Payment Status:</strong> {{ billing.Payment_Status }}</li>
         <li><strong>Payment Date:</strong> {{ billing.Payment_Date }}</li>
+        <br>
+        {% endfor %}
     </ul>
     {% endif %}
 </div>

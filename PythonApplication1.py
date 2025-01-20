@@ -271,8 +271,7 @@ def ward_bed():
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (ward_name, ward_type, floor_no, bed_id, bed_type, patient_id, booking_date, discharge_date, reservation_status))
             db.commit()
-            success_message = "Ward Booked Successfully!"
-            return success_message
+            return render_template('wardbed.html', success=True)
 
         except Exception as e:
             db.rollback()
@@ -314,8 +313,7 @@ def pharmacy():
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (medicine_id, medicine_name, brand, dosage, strength, quantity, expiry_date, batch_no, Price))
             db.commit()
-            success_message = "Insert Successfully!"
-            return success_message
+            return render_template('pharmacy.html', success=True)
 
         except Exception as e:
             db.rollback()
@@ -359,8 +357,7 @@ def billing():
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (patient_id, bill_date, total_amount, discount, tax_amount, finl_amount, payment_mtd, trns_id, paymt_sts, paymt_date))
             db.commit()
-            success_message = "Billing Successfully!"
-            return success_message
+            return render_template('billing.html', success=True)
 
         except Exception as e:
             db.rollback()
@@ -397,8 +394,7 @@ def onlineappointment():
                 VALUES (%s, %s, %s, %s, %s)
             """, (patient_name, doctor_id, doctor_name, doctor_spe, rsndis))
             db.commit()
-            success_message = "Online Appointment Successfully!"
-            return success_message
+            return render_template('onlineappointment.html', success=True)
 
         except Exception as e:
             db.rollback()
@@ -428,24 +424,25 @@ def billing_payment():
             cursor.execute("""
                 SELECT * FROM billing WHERE Patient_ID = %s
             """, (patient_id,))
-            billing_data = cursor.fetchone()
+            billing_data = cursor.fetchall()  # Use fetchall to get all records
 
             if billing_data:
-                # Assuming the columns in the "billing" table are:
-                # [Patient_ID, Bill_Date, Total_Amount, Discount, Tax_Amount, Final_Amount, Payment_Method, Transaction_ID, Payment_Status, Payment_Date]
-                billing_dict = {
-                    'Patient_ID': billing_data[0],
-                    'Bill_Date': billing_data[1],
-                    'Total_Amount': billing_data[2],
-                    'Discount': billing_data[3],
-                    'Tax_Amount': billing_data[4],
-                    'Final_Amount': billing_data[5],
-                    'Payment_Method': billing_data[6],
-                    'Transaction_ID': billing_data[7],
-                    'Payment_Status': billing_data[8],
-                    'Payment_Date': billing_data[9]
-                }
-                return render_template('billingpayment.html', billing=billing_dict)
+                billing_list = []
+                for data in billing_data:
+                    billing_dict = {
+                        'Patient_ID': data[0],
+                        'Bill_Date': data[1],
+                        'Total_Amount': data[2],
+                        'Discount': data[3],
+                        'Tax_Amount': data[4],
+                        'Final_Amount': data[5],
+                        'Payment_Method': data[6],
+                        'Transaction_ID': data[7],
+                        'Payment_Status': data[8],
+                        'Payment_Date': data[9]
+                    }
+                    billing_list.append(billing_dict)
+                return render_template('billingpayment.html', billing_list=billing_list)
 
             else:
                 return render_template('billingpayment.html', error="No billing record found for this Patient ID.")
