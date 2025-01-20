@@ -15,15 +15,15 @@
             background-color: #4CAF50;
             color: white;
             text-align: center;
-            padding: 10px 0;
+            padding: 15px 0;
         }
         .container {
             max-width: 900px;
-            margin: 0 auto;
+            margin: 20px auto;
             padding: 20px;
             background-color: #fff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
+            border-radius: 8px;
         }
         form {
             margin-bottom: 30px;
@@ -36,9 +36,9 @@
             padding: 10px;
             font-size: 14px;
             width: 300px;
-            margin-right: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            margin-right: 10px;
         }
         button {
             background-color: #4CAF50;
@@ -57,16 +57,24 @@
             margin-bottom: 20px;
         }
         ul {
-            list-style: none;
+            list-style-type: none;
             padding: 0;
         }
-        ul li {
-            margin: 10px 0;
+        li {
+            margin: 15px 0;
             font-size: 16px;
+            line-height: 1.6;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background-color: #ddd;
+            margin: 20px 0;
         }
         .error {
             color: red;
             font-size: 16px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -77,30 +85,34 @@
 </header>
 
 <div class="container">
-    <!-- Form to search for appointment data -->
     <form method="POST">
         <label for="appointment_date">Enter Appointment Date:</label>
         <input type="date" id="appointment_date" name="appointment_date" required>
         <button type="submit">Find</button>
     </form>
 
-    <!-- Display error message -->
+    <!-- Display error message if present -->
     {% if error %}
     <p class="error">{{ error }}</p>
     {% endif %}
 
-    <!-- Display appointment data -->
-    {% if appointment %}
+    <!-- Display appointments if data exists -->
+    {% if appointments %}
     <h2>Appointment Details</h2>
     <ul>
-        <li><strong>Patient Name:</strong> {{ appointment.Patient_Name }}</li>
-        <li><strong>Age:</strong> {{ appointment.Age }}</li>
-        <li><strong>Gender:</strong> {{ appointment.Gender }}</li>
-        <li><strong>Appointment Date:</strong> {{ appointment.Appointment_Date }}</li>
-        <li><strong>Appointment Day:</strong> {{ appointment.Appointment_Day }}</li>
-        <li><strong>Appointment Time:</strong> {{ appointment.Appointment_Time }}</li>
-        <li><strong>Reason of Appointment:</strong> {{ appointment.Reason_of_Appointment }}</li>
-        <li><strong>Consultation Type:</strong> {{ appointment.Consultation_Type }}</li>
+        {% for appointment in appointments %}
+        <li>
+            <strong>Patient Name:</strong> {{ appointment.Patient_Name }} <br>
+            <strong>Age:</strong> {{ appointment.Age }} <br>
+            <strong>Gender:</strong> {{ appointment.Gender }} <br>
+            <strong>Appointment Date:</strong> {{ appointment.Appointment_Date }} <br>
+            <strong>Appointment Day:</strong> {{ appointment.Appointment_Day }} <br>
+            <strong>Appointment Time:</strong> {{ appointment.Appointment_Time }} <br>
+            <strong>Reason for Appointment:</strong> {{ appointment.Reason_of_Appointment }} <br>
+            <strong>Consultation Type:</strong> {{ appointment.Consultation_Type }}
+        </li>
+        <hr>
+        {% endfor %}
     </ul>
     {% endif %}
 </div>

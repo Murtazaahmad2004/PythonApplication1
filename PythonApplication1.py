@@ -189,13 +189,13 @@ def register_patient():
                 VALUES (%s, %s, %s, %s, %s)
             """, (first_name, last_name, age, gender, contact))
             db.commit()
-            success_message = "Patient registered successfully!"
-            return success_message
+            # Pass success message flag
+            return render_template('registerpatient.html', success=True)
 
         except Exception as e:
             error = f"Failed to register patient. Error: {str(e)}"
             print(error)  # Log the error
-            return error
+            return render_template('registerpatient.html', error=error)
 
         finally:
             cursor.close()
@@ -230,8 +230,7 @@ def appointment_patient():
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """, (patient_name, age, gender, appodate, appoday, appotym, rsnappo, constyp))
             db.commit()
-            success_message = "Patient appointment successfully!"
-            return success_message
+            return render_template('appointment.html', success=True)
 
         except Exception as e:
             error = f"Failed to patient appointment. Error: {str(e)}"
@@ -480,21 +479,24 @@ def appointment_date():
                 SELECT Patient_Name, Age, Gender, Appointment_Date, Appointment_Day, Appointment_Time, Reason_of_Appointment, Consultation_Type
                 FROM appointment WHERE Appointment_Date = %s
             """, (appointment_date,))
-            appointment_data = cursor.fetchone()
+            appointment_data = cursor.fetchall()
 
             if appointment_data:
-                # Map the fetched data to a dictionary for easier handling in the template
-                appointment_dict = {
-                    'Patient_Name': appointment_data[0],
-                    'Age': appointment_data[1],
-                    'Gender': appointment_data[2],
-                    'Appointment_Date': appointment_data[3],
-                    'Appointment_Day': appointment_data[4],
-                    'Appointment_Time': appointment_data[5],
-                    'Reason_of_Appointment': appointment_data[6],
-                    'Consultation_Type': appointment_data[7],
-                }
-                return render_template('appointment_date.html', appointment=appointment_dict)
+                # Convert the fetched data into a list of dictionaries for easier handling in the template
+                appointments = []
+                for record in appointment_data:
+                    appointments.append({
+                        'Patient_Name': record[0],
+                        'Age': record[1],
+                        'Gender': record[2],
+                        'Appointment_Date': record[3],
+                        'Appointment_Day': record[4],
+                        'Appointment_Time': record[5],
+                        'Reason_of_Appointment': record[6],
+                        'Consultation_Type': record[7],
+                    })
+
+                return render_template('appointment_date.html', appointments=appointments)
 
             else:
                 return render_template('appointment_date.html', error="No appointment record found for this date.")

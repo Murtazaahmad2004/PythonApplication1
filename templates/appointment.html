@@ -19,8 +19,8 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(to bottom, #4facfe, #00f2fe); /*Gradient background*/
-            color: #333;
+            background: linear-gradient(to bottom, #4facfe, #00f2fe);
+            /* color: #333; */
             /* overflow-y: hidden; */
         }
 
@@ -87,6 +87,39 @@
             transform: scale(1.03); /* Slight zoom on hover */
         }
 
+        .success-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            font-size: 1.2em;
+            z-index: 10;
+            opacity: 0;
+            animation: fadeInOut 3s ease forwards;
+        }
+
+        /* Fade In and Out Animation */
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            10%, 90% {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -40%);
+            }
+        }
+
         /* Responsive Design */
         @media (max-width: 600px) {
             h1 {
@@ -151,5 +184,12 @@
 
         <button type="submit">Submit</button>
     </form>
+
+     <!-- Success Message -->
+     {% if success %}
+     <div class="success-modal">
+         Appointment successfully!
+     </div>
+     {% endif %}
 </body>
 </html>
