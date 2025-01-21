@@ -61,9 +61,9 @@ def appointmentcall():
 def dashboard():
     return render_template('dashboard.html')
 
-# Registration Form
-@app.route('/register', methods=['GET', 'POST'])
-def register():
+# signup Form
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
     if request.method == 'POST':
         # Retrieve form data
         action = request.form.get('action')  # Determines whether it's login or register
@@ -75,25 +75,25 @@ def register():
 
         cursor = db.cursor()
         try:
-            if action == 'register':  # Handle registration
+            if action == 'signup':  # Handle registration
                 # Check if all fields are provided
                 if not all([patient_name, gender, id_card, password, confirmpass]):
-                    error = "All fields are required for registration!"
-                    return render_template('register.html', error=error)
+                    error = "All fields are required for signup!"
+                    return render_template('signup.html', error=error)
 
                 # Insert the user data into the database
                 cursor.execute("""
-                    INSERT INTO patient_register (Patient_Name, Gender, ID_Card_Number, Password, Confirm_Password)
+                    INSERT INTO signup (Patient_Name, Gender, ID_Card_Number, Password, Confirm_Password)
                     VALUES (%s, %s, %s, %s, %s)
                 """, (patient_name, gender, id_card, password, confirmpass))
                 db.commit()
-                success_message = "User registered successfully! You can now log in."
+                success_message = "User signup successfully! You can now log in."
                 return render_template('login.html', success=success_message)
 
             elif action == 'login':  # Handle login
                 # Check if the ID card exists
                 cursor.execute("""
-                    SELECT * FROM patient_register WHERE ID_Card_Number = %s
+                    SELECT * FROM signup WHERE ID_Card_Number = %s
                 """, (id_card,))
                 user = cursor.fetchone()
 
@@ -103,7 +103,7 @@ def register():
                     session['user_name'] = user[1]  # Assuming second column is Patient_Name
                     return redirect(url_for('dashboard'))  # Redirect to dashboard
                 else:
-                    error = "Invalid ID Card Number. Please register first."
+                    error = "Invalid ID Card Number. Please signup first."
                     return render_template('login.html', error=error)
 
             else:
@@ -115,7 +115,7 @@ def register():
             cursor.close()
     
     # Render the login/registration form for GET requests
-    return render_template('register.html')
+    return render_template('signup.html')
 
 # login route
 @app.route('/login', methods=['GET', 'POST'])
