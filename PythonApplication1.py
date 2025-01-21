@@ -142,7 +142,7 @@ def login():
                     # Save login data into login_user1 table
                     login_time = datetime.datetime.now()
                     cursor.execute("""
-                        INSERT INTO login_user1 (Patient_ID, Password, Login_Time) 
+                        INSERT INTO login (Patient_ID, Password, Login_Time) 
                         VALUES (%s, %s, %s)
                     """, (userid, password, login_time))
                     db.commit()  # Commit the transaction
