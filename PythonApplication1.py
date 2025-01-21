@@ -135,7 +135,7 @@ def login():
                     return redirect(url_for('dashboard'))  # Redirect to admin portal
 
                 # For non-admin users, check if the user exists in the database
-                cursor.execute("""SELECT * FROM patient_register WHERE Patient_ID = %s AND Password = %s""", (userid, password))
+                cursor.execute("""SELECT * FROM signup WHERE Patient_ID = %s AND Password = %s""", (userid, password))
                 user = cursor.fetchone()
 
                 if user:
