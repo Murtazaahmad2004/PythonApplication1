@@ -141,9 +141,14 @@
 
     <!-- Ward Information -->
     <input type="hidden" name="action" value="register">
-    <label for="ward_name">Ward Name:</label>
-    <input type="text" name="ward_name" placeholder="Enter Ward Name" required>
 
+    <label for="ward_name">Ward Name:</label>
+    <select id="ward_name" name="ward_name" required>
+        <option value="General_Ward">General Ward</option>
+        <option value=" Private_Ward"> Private Ward</option>
+        <option value="Semi-Private_Ward">Semi-Private Ward</option>
+    </select>
+    
     <label for="ward_type">Ward Type:</label>
     <select id="ward_type" name="ward_type" required>
         <option value="Male">Male</option>
@@ -162,7 +167,7 @@
 
     <!-- Bed Information -->
     <label for="bed_id">Bed ID:</label>
-    <input type="number" name="bed_id" placeholder="Enter Bed ID" required>
+    <input type="text" name="bed_id" value="{{ bed_id }}" readonly required>
 
     <label for="bed_type">Bed Type:</label>
     <select id="bed_type" name="bed_type" required>
@@ -172,7 +177,7 @@
     </select>
 
     <label for="patient_id">Patient ID:</label>
-    <input type="number" name="patient_id" placeholder="Enter Patient ID" required>
+    <input type="text" name="patient_id" value="{{ patient_id }}" readonly required>
     
     <label for="booking_date">Booking Date:</label>
     <input type="date" name="booking_date" placeholder="Enter Booking Date" required>

@@ -137,8 +137,9 @@
 <form method="POST" action="/billing">
     <h1>Billing and Payments Management</h1>
     <input type="hidden" name="action" value="register">
+
     <label for="patient_id">Patient ID:</label>
-    <input type="number" name="patient_id" placeholder="Enter Patient ID" required>
+    <input type="text" name="patient_id" value="{{ random_patient_id }}" readonly required>
 
     <label for="bill_date">Bill Date:</label>
     <input type="date" name="bill_date" placeholder="Enter Bill Date" required>
@@ -164,7 +165,7 @@
     </select>
 
     <label for="trns_id">Transaction ID(Only for online payments):</label>
-    <input type="text" name="trns_id" placeholder="Enter Transaction ID" required>
+    <input type="text" name="trns_id" value="{{ random_transaction_id }}" readonly required>
 
     <label for="paymt_sts">Payment Status:</label>
     <select id="paymt_sts" name="paymt_sts">

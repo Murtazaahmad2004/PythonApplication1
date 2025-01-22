@@ -141,8 +141,8 @@
         <input type="hidden" name="action" value="register">
 
         <label for="patient_id">Patient ID:</label>
-        <input type="text" name="patient_id" placeholder="Enter Patient ID" required>
-
+        <input type="text" name="patient_id" value="{{ patient_id }}" readonly required>
+        
         <label for="patient_name">Patient Name:</label>
         <input type="text" name="patient_name" placeholder="Enter Patient Name" required>
         
@@ -157,7 +157,7 @@
         </select>
 
         <label for="appo_id">Appointment ID:</label>
-        <input type="number" name="appo_id" placeholder="Enter Appointment ID" required>
+        <input type="text" name="appo_id" value="{{ appoid }}" readonly required>
 
         <label for="appdate">Appointment Date:</label>
         <input type="date" name="appdate" required>

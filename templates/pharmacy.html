@@ -136,8 +136,9 @@
 <form method="POST">
     <h1>Pharmacy Management</h1>
     <input type="hidden" name="action" value="register">
+
     <label for="medicine_id">Medicine ID:</label>
-    <input type="number" name="medicine_id" placeholder="Enter Medicine ID" required>
+    <input type="text" name="medicine_id" value="{{ random_medicine_id }}" readonly required>
 
     <label for="medicine_name">Medicine Name:</label>
     <input type="text" name="medicine_name" placeholder="Enter Medicine Name" required>
@@ -179,7 +180,7 @@
     <input type="date" name="expiry_date" required>
 
     <label for="batch_no">Batch No:</label>
-    <input type="number" name="batch_no" placeholder="Enter Batch No" required>
+    <input type="text" name="batch_no" value="{{ random_batch_no }}" readonly required>
 
     <label for="Price_per_Unit">Price per Unit:</label>
     <input type="number" name="Price_per_Unit" placeholder="Enter Price" required>
