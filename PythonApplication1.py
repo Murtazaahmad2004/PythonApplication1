@@ -185,7 +185,7 @@ def register_patient():
         cursor = db.cursor()
         try:
             cursor.execute("""
-                INSERT INTO register_patient (First_Name, Last_Name, Age, Gender, Contact)
+                INSERT INTO register_patient (First_Name, Last_Name, Age, Gender, Contact_Number)
                 VALUES (%s, %s, %s, %s, %s)
             """, (first_name, last_name, age, gender, contact))
             db.commit()
@@ -208,6 +208,7 @@ def register_patient():
 def appointment_patient():
     if request.method == 'POST':
         # Retrieve form data
+        patient_id = request.form.get('patient_id')
         patient_name = request.form.get('patient_name')
         age = request.form.get('age')
         gender = request.form.get('gender')
@@ -219,7 +220,7 @@ def appointment_patient():
         constyp = request.form.get('conslt')
 
         # Validate the fields
-        if not all([patient_name, age, gender, appoid, appodate, appoday, appotym, rsnappo, constyp]):
+        if not all([patient_id ,patient_name, age, gender, appoid, appodate, appoday, appotym, rsnappo, constyp]):
             error = "All fields are required for registration!"
             return render_template('appointment.html', error=error)
 
@@ -227,9 +228,9 @@ def appointment_patient():
         cursor = db.cursor()
         try:
             cursor.execute("""
-                INSERT INTO appointment (Patient_Name, Age, Gender, Appointment_ID, Appointment_Date, Appointment_Day, Appointment_Time, Reason_of_Appointment, Consultation_Type)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (patient_name, age, gender, appoid, appodate, appoday, appotym, rsnappo, constyp))
+                INSERT INTO appointment (Patient_ID, Patient_Name, Age, Gender, Appointment_ID, Appointment_Date, Appointment_Day, Appointment_Time, Reason_of_Appointment, Consultation_Type)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (patient_id ,patient_name, age, gender, appoid, appodate, appoday, appotym, rsnappo, constyp))
             db.commit()
             return render_template('appointment.html', success=True)
 
@@ -310,7 +311,7 @@ def pharmacy():
         cursor = db.cursor()
         try:
             cursor.execute("""
-                INSERT INTO pharamacy (Medicine_ID, Medicine_Name, Brand_Name, Dosage_Form, Strength, Quantity_In_Stock, Expiry_Date, Batch_No, Price_Per_Unit)
+                INSERT INTO pharmacy (Medicine_ID, Medicine_Name, Brand_Name, Dosage_Form, Strength, Quantity_In_Stock, Expiry_Date, Batch_No, Price_Per_Unit)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (medicine_id, medicine_name, brand, dosage, strength, quantity, expiry_date, batch_no, Price))
             db.commit()
