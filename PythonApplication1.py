@@ -466,6 +466,14 @@ def generate_random_doctor_id():
     """Generate a random alphanumeric Doctor ID."""
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
 
+def generate_random_patient_id():
+    """Generate a random alphanumeric patient ID."""
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+
+def generate_random_appointment_id():
+    """Generate a random alphanumeric appointment ID."""
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+
 def is_doctor_id_unique(doctor_id):
     """Check if the Doctor ID is unique in the database."""
     cursor = db.cursor()
@@ -474,31 +482,53 @@ def is_doctor_id_unique(doctor_id):
     cursor.close()
     return count == 0
 
+def is_patient_id_unique(patient_id):
+    """Check if the Patient ID is unique in the database."""
+    cursor = db.cursor()
+    cursor.execute("SELECT COUNT(*) FROM onlineappointment WHERE Patient_ID = %s", (patient_id,))
+    count = cursor.fetchone()[0]
+    cursor.close()
+    return count == 0
+
+def is_appointment_id_unique(appo_id):
+    """Check if the Appointment ID is unique in the database."""
+    cursor = db.cursor()
+    cursor.execute("SELECT COUNT(*) FROM onlineappointment WHERE Appointment_ID = %s", (appo_id,))
+    count = cursor.fetchone()[0]
+    cursor.close()
+    return count == 0
+
 @app.route('/onlineappointment', methods=['GET', 'POST'])
 def onlineappointment():
     if request.method == 'POST':
         # Retrieve form data
+        patient_id = request.form.get('patient_id')
         patient_name = request.form.get('patient_name')
+        appo_id = request.form.get('appo_id')
         doctor_id = request.form.get('doctor_id')
         doctor_name = request.form.get('doctor_name')
         doctor_spe = request.form.get('doctor_spe')
         rsndis = request.form.get('rsndis')
 
         # Validate the fields
-        if not all([patient_name, doctor_id, doctor_name, doctor_spe, rsndis]):
+        if not all([patient_id ,patient_name, appo_id, doctor_id, doctor_name, doctor_spe, rsndis]):
             return "All fields are required for Appointment!"
 
         # Ensure Doctor ID is unique
         if not is_doctor_id_unique(doctor_id):
             return "The generated Doctor ID already exists in the database. Please refresh the page to try again."
-
+        if not is_patient_id_unique(patient_id):
+            return "Patient ID already exists in the database!"
+        if not is_appointment_id_unique(appo_id):
+            return "Appointment ID already exists in the database!"
+        
         # Insert the patient data into the database
         cursor = db.cursor()
         try:
             cursor.execute("""
-                INSERT INTO onlineappointment (Patient_Name, Doctor_ID, Doctor_Name, Doctor_Specialization, Reason_of_Dieases)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (patient_name, doctor_id, doctor_name, doctor_spe, rsndis))
+                INSERT INTO onlineappointment (Patient_ID ,Patient_Name, Appointment_ID, Doctor_ID, Doctor_Name, Doctor_Specialization, Reason_of_Dieases)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (patient_id ,patient_name, appo_id, doctor_id, doctor_name, doctor_spe, rsndis))
             db.commit()
             return render_template('onlineappointment.html', success=True)
 
@@ -511,12 +541,16 @@ def onlineappointment():
 
     # Handle GET request
     random_doctor_id = None
+    random_patient_id = None
+    random_appo_id = None
     while True:
+        random_patient_id = generate_random_patient_id()
         random_doctor_id = generate_random_doctor_id()
+        random_appo_id = generate_random_appointment_id()
         if is_doctor_id_unique(random_doctor_id):
             break
 
-    return render_template('onlineappointment.html', random_doctor_id=random_doctor_id)
+    return render_template('onlineappointment.html', random_appo_id=random_appo_id ,random_patient_id=random_patient_id, random_doctor_id=random_doctor_id)
 
 # fetch billing and payment data
 @app.route('/billingpayment', methods=['GET', 'POST'])
@@ -541,16 +575,16 @@ def billing_payment():
                 billing_list = []
                 for data in billing_data:
                     billing_dict = {
-                        'Patient_ID': data[0],
-                        'Bill_Date': data[1],
-                        'Total_Amount': data[2],
-                        'Discount': data[3],
-                        'Tax_Amount': data[4],
-                        'Final_Amount': data[5],
-                        'Payment_Method': data[6],
-                        'Transaction_ID': data[7],
-                        'Payment_Status': data[8],
-                        'Payment_Date': data[9]
+                        'Patient_ID': data[1],
+                        'Bill_Date': data[2],
+                        'Total_Amount': data[3],
+                        'Discount': data[4],
+                        'Tax_Amount': data[5],
+                        'Final_Amount': data[6],
+                        'Payment_Method': data[7],
+                        'Transaction_ID': data[8],
+                        'Payment_Status': data[9],
+                        'Payment_Date': data[10]
                     }
                     billing_list.append(billing_dict)
                 return render_template('billingpayment.html', billing_list=billing_list)

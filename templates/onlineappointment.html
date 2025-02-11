@@ -138,21 +138,63 @@
             <h1>Online Appointment</h1>
             <input type="hidden" name="action" value="register">
 
+            <label for="patient_id">Patient ID:</label>
+            <input type="text" name="patient_id" value="{{ random_patient_id }}" readonly required>
+            
             <label for="patient_name">Patient Name:</label>
             <input type="patient_name" name="patient_name" placeholder="Enter Patient Name" required>
+
+            <label for="appo_id">Appointment ID:</label>
+            <input type="text" name="appo_id" value="{{ random_appo_id }}" readonly required>
+
+            <label for="appo_date">Appointment Date:</label>
+            <input type="date" name="appo_date" required>
 
             <label for="doctor_id">Doctor ID:</label>
             <input type="text" name="doctor_id" value="{{ random_doctor_id }}" readonly required>
 
             <label for="doctor_name">Doctor Name:</label>
-            <input type="doctor_name" name="doctor_name" placeholder="Enter Doctor Name" required>
-
+            <select id="doctor_name" name="doctor_name" required>
+                <option value="Dr. Tariq Mehmood">Dr. Tariq Mehmood</option>
+                <option value="Dr. Uzma Zafar">Dr. Uzma Zafar</option>
+                <option value="Dr. Asad Khan">Dr. Asad Khan</option>
+                <option value="Dr. Fatima Ali">Dr. Fatima Ali</option>
+                <option value="Dr. Imran Ahmed">Dr. Imran Ahmed</option>
+                <option value="Dr. Noreen Riaz">Dr. Noreen Riaz</option>
+                <option value="Dr. Shahid Malik">Dr. Shahid Malik</option>
+                <option value="Dr. Sana Javed">Dr. Sana Javed</option>
+                <option value="Dr. Mohammad Saeed">Dr. Mohammad Saeed</option>
+                <option value="Dr. Ayesha Shahid">Dr. Ayesha Shahid</option>
+                <option value="Dr. Irfan Tahir">Dr. Irfan Tahir</option>
+            </select>
+            
             <label for="doctor_spe">Doctor Specialization:</label>
-            <input type="doctor_spe" name="doctor_spe" placeholder="Specialization" required>
+            <select id="doctor_spe" name="doctor_spe" required>
+                <option value="Cardiologist">Cardiologist</option>
+                <option value="Dermatologist">Dermatologist</option>
+                <option value="Neurologist">Neurologist</option>
+                <option value="Obstetrician/Gynecologist">Obstetrician/Gynecologist</option>
+                <option value="Orthopedic Surgeon">Orthopedic Surgeon</option>
+                <option value="Pediatrician">Pediatrician</option>
+                <option value="Gastroenterologist">Gastroenterologist</option>
+                <option value="Psychiatrist">Psychiatrist</option>
+                <option value="General Surgeon">General Surgeon</option>
+                <option value="Ophthalmologis">Ophthalmologis</option>
+                <option value="ENT Specialist">ENT Specialist</option>
+            </select>
 
             <label for="rsndis">Reason of dieases:</label>
-            <input type="rsndis" name="rsndis" placeholder="Dieases" required>
-            
+            <select id="rsndis" name="rsndis" required>
+                <option value="Routine Checkup">Routine Checkup</option>
+                <option value="Emergency">Emergency</option>
+                <option value="Prescription Renewal">Prescription Renewal</option>
+                <option value="Vaccination">Vaccination</option>
+                <option value="Physical Therapy">Physical Therapy</option>
+                <option value="Fever/Flu Symptoms">Fever/Flu Symptoms</option>
+                <option value="Pain (e.g., back pain, joint pain)">Pain (e.g., back pain, joint pain)</option>
+                <option value="Eye/Ear Problems">Eye/Ear Problems</option>
+            </select>
+
             <button type="submit">Apply</button>
         </form>
     </div>
