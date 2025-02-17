@@ -505,13 +505,14 @@ def onlineappointment():
         patient_id = request.form.get('patient_id')
         patient_name = request.form.get('patient_name')
         appo_id = request.form.get('appo_id')
+        appo_date = request.form.get('appo_date')
         doctor_id = request.form.get('doctor_id')
         doctor_name = request.form.get('doctor_name')
         doctor_spe = request.form.get('doctor_spe')
         rsndis = request.form.get('rsndis')
 
         # Validate the fields
-        if not all([patient_id ,patient_name, appo_id, doctor_id, doctor_name, doctor_spe, rsndis]):
+        if not all([patient_id ,patient_name, appo_id, appo_date, doctor_id, doctor_name, doctor_spe, rsndis]):
             return "All fields are required for Appointment!"
 
         # Ensure Doctor ID is unique
@@ -526,9 +527,9 @@ def onlineappointment():
         cursor = db.cursor()
         try:
             cursor.execute("""
-                INSERT INTO onlineappointment (Patient_ID ,Patient_Name, Appointment_ID, Doctor_ID, Doctor_Name, Doctor_Specialization, Reason_of_Dieases)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, (patient_id ,patient_name, appo_id, doctor_id, doctor_name, doctor_spe, rsndis))
+                INSERT INTO onlineappointment (Patient_ID ,Patient_Name, Appointment_ID, Appointment_Date, Doctor_ID, Doctor_Name, Doctor_Specialization, Reason_of_Dieases)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (patient_id ,patient_name, appo_id, appo_date, doctor_id, doctor_name, doctor_spe, rsndis))
             db.commit()
             return render_template('onlineappointment.html', success=True)
 
@@ -653,6 +654,57 @@ def appointment_date():
 
     # Render the form for GET request
     return render_template('appointment_date.html')
+
+# fetch online appo data
+@app.route('/onlineappo_data', methods=['GET', 'POST'])
+def onlineappo_data():
+    if request.method == 'POST':
+        # Get the appointment date from the form
+        appointment_date = request.form.get('appo_date')
+
+        # Validate the input
+        if not appointment_date:
+            return render_template('onlineappo_data.html', error="Appointment Date is required!")
+
+        # Fetch the appointment data from the database
+        cursor = db.cursor()
+        try:
+            cursor.execute("""
+                SELECT Patient_ID, Patient_Name, Appointment_ID, Appointment_Date, Doctor_ID, Doctor_Name, Doctor_Specialization, Reason_of_Dieases
+                FROM onlineappointment WHERE Appointment_Date = %s
+            """, (appointment_date,))
+            onlineappointment_data = cursor.fetchall()
+
+            if onlineappointment_data:
+                # Convert the fetched data into a list of dictionaries
+                onlineappointments = []
+                for record in onlineappointment_data:
+                    onlineappointments.append({
+                        'Patient_ID': record[0],
+                        'Patient_Name': record[1],
+                        'Appointment_ID': record[2],
+                        'Appointment_Date': record[3],
+                        'Doctor_ID': record[4],
+                        'Doctor_Name': record[5],
+                        'Doctor_Specialization': record[6], 
+                        'Reason_of_Dieases': record[7],
+                    })
+
+                return render_template('onlineappo_data.html', onlineappointments=onlineappointments)
+
+            else:
+                return render_template('onlineappo_data.html', error="No Online Appointment record found for this date.")
+
+        except Exception as e:
+            error = f"Failed to Fetch Online Appointment Data. Error: {str(e)}"
+            print(error)  # Log the error for debugging
+            return render_template('onlineappo_data.html', error=error)
+
+        finally:
+            cursor.close()
+
+    # Render the form for GET request
+    return render_template('onlineappo_data.html')
 
 # Run the app
 if __name__ == '__main__':
