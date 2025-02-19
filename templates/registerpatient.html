@@ -142,6 +142,9 @@
     <div class="registration-container">
         <h1>Register Patient</h1>
         <form method="POST" action="/registerpatient">
+            <label for="patient_id">Patient ID:</label>
+            <input type="text" name="patient_id" value="{{ patient_id }}" readonly required>
+
             <label for="first_name">First Name:</label>
             <input type="text" name="first_name" placeholder="Enter First Name" required>
 

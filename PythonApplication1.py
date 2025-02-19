@@ -170,8 +170,13 @@ def login():
 # Patient Register Route
 @app.route('/registerpatient', methods=['GET', 'POST'])
 def register_patient():
+    def generate_random_id(length=8):
+        """Generate a random alphanumeric ID of specified length."""
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+
     if request.method == 'POST':
         # Retrieve form data
+        patient_id = request.form.get('patient_id')
         first_name = request.form.get('first_name')
         last_name = request.form.get('last_name')
         age = request.form.get('age')
@@ -179,17 +184,22 @@ def register_patient():
         contact = request.form.get('contact')
 
         # Validate the fields
-        if not all([first_name, last_name, age, gender, contact]):
+        if not all([patient_id ,first_name, last_name, age, gender, contact]):
             error = "All fields are required for registration!"
             return render_template('registerpatient.html', error=error)
 
         # Insert the patient data into the database
         cursor = db.cursor()
         try:
+            cursor.execute("SELECT * FROM register_patient WHERE Patient_ID = %s", (patient_id))
+            if cursor.fetchone():
+                error = "Patient ID already exists!"
+                return render_template('registerpatient.html', error=error)
+            
             cursor.execute("""
-                INSERT INTO register_patient (First_Name, Last_Name, Age, Gender, Contact_Number)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (first_name, last_name, age, gender, contact))
+                INSERT INTO register_patient (Patient_ID, First_Name, Last_Name, Age, Gender, Contact_Number)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (patient_id ,first_name, last_name, age, gender, contact))
             db.commit()
             # Pass success message flag
             return render_template('registerpatient.html', success=True)
@@ -202,8 +212,9 @@ def register_patient():
         finally:
             cursor.close()
 
-    # Render the form for GET request
-    return render_template('registerpatient.html')
+ # For GET request, pre-generate random IDs
+    patient_id = generate_random_id()
+    return render_template('registerpatient.html', patient_id=patient_id)
 
 # Appointment Route
 @app.route('/appointment', methods=['GET', 'POST'])
