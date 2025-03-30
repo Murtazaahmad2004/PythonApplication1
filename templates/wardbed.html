@@ -186,7 +186,12 @@
     <input type="date" name="dscdate" placeholder="Enter Discharge Date" required>
 
     <label for="resvsts">Reservation Status:</label>
-    <input type="text" name="resvsts" placeholder="Enter Reservation Status" required>
+    <select id="text" name="resvsts" required>
+        <option value="Reserved">Reserved</option>
+        <option value="Available">Available</option>
+        <option value="Occupied">Occupied</option>
+    </select>
+
     <!-- Submit Button -->
     <button type="submit">Submit</button>
 </form>

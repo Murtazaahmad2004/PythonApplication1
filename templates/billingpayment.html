@@ -32,7 +32,7 @@
             font-size: 16px;
             margin-right: 10px;
         }
-        input[type="text"] {
+        input[type="date"] {
             padding: 10px;
             font-size: 14px;
             width: 300px;
@@ -68,6 +68,13 @@
             color: red;
             font-size: 16px;
         }
+        .back-button {
+            background-color: #f44336; 
+            margin-left: 300px;
+        }
+        .back-button:hover {
+            background-color: #d32f2f;
+        }
     </style>
 </head>
 <body>
@@ -79,8 +86,8 @@
 <div class="container">
     <!-- Form to search for billing data -->
     <form method="POST">
-        <label for="patient_id">Enter Patient ID:</label>
-        <input type="text" id="patient_id" name="patient_id" placeholder="Enter Patient ID">
+        <label for="bill_date">Enter Bill Date:</label>
+        <input type="date" id="bill_date" name="bill_date" placeholder="Enter Bill Date">
         <button type="submit">Find</button>
     </form>
 
@@ -98,7 +105,6 @@
         <li><strong>Bill Date:</strong> {{ billing.Bill_Date }}</li>
         <li><strong>Total Amount:</strong> {{ billing.Total_Amount }}</li>
         <li><strong>Discount:</strong> {{ billing.Discount }}</li>
-        <li><strong>Tax Amount:</strong> {{ billing.Tax_Amount }}</li>
         <li><strong>Final Amount:</strong> {{ billing.Final_Amount }}</li>
         <li><strong>Payment Method:</strong> {{ billing.Payment_Method }}</li>
         <li><strong>Transaction ID:</strong> {{ billing.Transaction_ID }}</li>
@@ -108,6 +114,10 @@
         {% endfor %}
     </ul>
     {% endif %}
+
+        <!-- Back to Appointments Button -->
+        <button class="back-button" onclick="window.location.href='/userscreen';">Back to UserScreen</button>
+
 </div>
 </body>
 </html>

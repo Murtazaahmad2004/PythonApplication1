@@ -130,7 +130,37 @@
                 padding: 7px;
             }
         }
+        .hidden {
+            display: none;
+        }
     </style>
+
+    <script>
+        function toggleTransactionID() {
+            var paymentMethod = document.getElementById("payment_mtd").value;
+            var transactionField = document.getElementById("transaction_id_field");
+
+            if (paymentMethod === "Debit Card" || paymentMethod === "Online Payment") {
+                transactionField.classList.remove("hidden");
+            } else {
+                transactionField.classList.add("hidden");
+            }
+        }
+
+        function calculateFinalAmount() {
+            var totalAmount = parseFloat(document.getElementById("total_amount").value) || 0;
+            var discount = parseFloat(document.getElementById("discount").value) || 0;
+            var finalAmountField = document.getElementById("finl_amount");
+
+            if (totalAmount >= discount) {
+                finalAmountField.value = totalAmount - discount;
+            } else {
+                finalAmountField.value = 0; // Ensuring no negative values
+            }
+        }
+    </script>
+
+
 </head>
 <body>
 
@@ -145,27 +175,26 @@
     <input type="date" name="bill_date" placeholder="Enter Bill Date" required>
 
     <label for="total_amount">Total Amount:</label>
-    <input type="number" name="total_amount" placeholder="Enter Total Amount" required>
+    <input type="number" id="total_amount" name="total_amount" placeholder="Enter Total Amount" required oninput="calculateFinalAmount()">
 
     <label for="discount">Discount:</label>
-    <input type="number" name="discount" placeholder="Enter Discount" required>
-
-    <label for="tax_amount">Tax Amount:</label>
-    <input type="number" name="tax_amount" placeholder="Enter Tax Amount" required>
+    <input type="number" id="discount" name="discount" placeholder="Enter Discount" required oninput="calculateFinalAmount()">
 
     <label for="finl_amount">Final Amount:</label>
-    <input type="number" name="finl_amount" placeholder="Enter Final Amount" required>
+    <input type="number" id="finl_amount" name="finl_amount" placeholder="Enter Final Amount" readonly required>
 
-    <label for="payment_mtd">Payment Method:</label>
-    <select id="payment_mtd" name="payment_mtd">
+
+   <label for="payment_mtd">Payment Method:</label>
+    <select id="payment_mtd" name="payment_mtd" onchange="toggleTransactionID()">
         <option value="Cash">Cash</option>
-        <option value="Credit Card">Credit Card</option>
         <option value="Debit Card">Debit Card</option>
         <option value="Online Payment">Online Payment</option>
     </select>
 
-    <label for="trns_id">Transaction ID(Only for online payments):</label>
-    <input type="text" name="trns_id" value="{{ random_transaction_id }}" readonly required>
+    <div id="transaction_id_field" class="hidden">
+        <label for="trns_id">Transaction ID (Only for online payments or debit cards):</label>
+        <input type="text" name="trns_id" value="{{ random_transaction_id }}" readonly>
+    </div>
 
     <label for="paymt_sts">Payment Status:</label>
     <select id="paymt_sts" name="paymt_sts">

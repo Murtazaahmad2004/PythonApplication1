@@ -76,6 +76,13 @@
             font-size: 16px;
             margin-bottom: 20px;
         }
+        .back-button {
+            background-color: #f44336; 
+            margin-left: 300px;
+        }
+        .back-button:hover {
+            background-color: #d32f2f;
+        }
     </style>
 </head>
 <body>
@@ -115,6 +122,10 @@
         {% endfor %}
     </ul>
     {% endif %}
+
+    <!-- Back to Appointments Button -->
+    <button class="back-button" onclick="window.location.href='/userscreen';">Back to UserScreen</button>
+
 </div>
 </body>
 </html>

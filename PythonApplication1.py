@@ -167,55 +167,6 @@ def login():
     # Render the login/registration form for GET requests
     return render_template('login.html')
 
-# Patient Register Route
-@app.route('/registerpatient', methods=['GET', 'POST'])
-def register_patient():
-    def generate_random_id(length=8):
-        """Generate a random alphanumeric ID of specified length."""
-        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
-
-    if request.method == 'POST':
-        # Retrieve form data
-        patient_id = request.form.get('patient_id')
-        first_name = request.form.get('first_name')
-        last_name = request.form.get('last_name')
-        age = request.form.get('age')
-        gender = request.form.get('gender')
-        contact = request.form.get('contact')
-
-        # Validate the fields
-        if not all([patient_id ,first_name, last_name, age, gender, contact]):
-            error = "All fields are required for registration!"
-            return render_template('registerpatient.html', error=error)
-
-        # Insert the patient data into the database
-        cursor = db.cursor()
-        try:
-            cursor.execute("SELECT * FROM register_patient WHERE Patient_ID = %s", (patient_id))
-            if cursor.fetchone():
-                error = "Patient ID already exists!"
-                return render_template('registerpatient.html', error=error)
-            
-            cursor.execute("""
-                INSERT INTO register_patient (Patient_ID, First_Name, Last_Name, Age, Gender, Contact_Number)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            """, (patient_id ,first_name, last_name, age, gender, contact))
-            db.commit()
-            # Pass success message flag
-            return render_template('registerpatient.html', success=True)
-
-        except Exception as e:
-            error = f"Failed to register patient. Error: {str(e)}"
-            print(error)  # Log the error
-            return render_template('registerpatient.html', error=error)
-
-        finally:
-            cursor.close()
-
- # For GET request, pre-generate random IDs
-    patient_id = generate_random_id()
-    return render_template('registerpatient.html', patient_id=patient_id)
-
 # Appointment Route
 @app.route('/appointment', methods=['GET', 'POST'])
 def appointment_patient():
@@ -252,7 +203,8 @@ def appointment_patient():
 
             # Insert into database
             cursor.execute("""
-                INSERT INTO appointment (Patient_ID, Patient_Name, Age, Gender, Appointment_ID, Appointment_Date, Appointment_Day, Appointment_Time, Reason_of_Appointment, Consultation_Type)
+                INSERT INTO appointment (Patient_ID, Patient_Name, Age, Gender, Appointment_ID, Appointment_Date, Appointment_Day, 
+                           Appointment_Time, Reason_of_Appointment, Consultation_Type)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (patient_id, patient_name, age, gender, appoid, appodate, appoday, appotym, rsnappo, constyp))
             db.commit()
@@ -426,7 +378,6 @@ def billing():
         bill_date = request.form.get('bill_date')
         total_amount = request.form.get('total_amount')
         discount = request.form.get('discount')
-        tax_amount = request.form.get('tax_amount')
         finl_amount = request.form.get('finl_amount')
         payment_mtd = request.form.get('payment_mtd')
         trns_id = request.form.get('trns_id')
@@ -434,7 +385,7 @@ def billing():
         paymt_date = request.form.get('paymt_date')
 
         # Validate the fields
-        if not all([patient_id, bill_date, total_amount, discount, tax_amount, finl_amount, payment_mtd, trns_id, paymt_sts, paymt_date]):
+        if not all([patient_id, bill_date, total_amount, discount, finl_amount, payment_mtd, trns_id, paymt_sts, paymt_date]):
             error = "All fields are required for billing!"
             return error
 
@@ -448,9 +399,9 @@ def billing():
         cursor = db.cursor()
         try:
             cursor.execute("""
-                INSERT INTO billing (Patient_ID, Bill_Date, Total_Amount, Discount, Tax_Amount, Final_Amount, Payment_Method, Transaction_ID, Payment_Status, Payment_Date)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (patient_id, bill_date, total_amount, discount, tax_amount, finl_amount, payment_mtd, trns_id, paymt_sts, paymt_date))
+                INSERT INTO billing (Patient_ID, Bill_Date, Total_Amount, Discount, Final_Amount, Payment_Method, Transaction_ID, Payment_Status, Payment_Date)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (patient_id, bill_date, total_amount, discount, finl_amount, payment_mtd, trns_id, paymt_sts, paymt_date))
             db.commit()
             return render_template('billing.html', success=True)
 
@@ -569,37 +520,42 @@ def onlineappointment():
 def billing_payment():
     if request.method == 'POST':
         # Get the patient ID from the form
-        patient_id = request.form.get('patient_id')
+        bill_date = request.form.get('bill_date')
 
         # Validate the input
-        if not patient_id:
-            return render_template('billingpayment.html', error="Patient ID is required!")
+        if not bill_date:
+            return render_template('billingpayment.html', error="Bill Date is required!")
 
         # Fetch the billing data from the database
         cursor = db.cursor()
         try:
             cursor.execute("""
-                SELECT * FROM billing WHERE Patient_ID = %s
-            """, (patient_id,))
-            billing_data = cursor.fetchall()  # Use fetchall to get all records
+                SELECT Patient_ID, Bill_Date, Total_Amount, Discount, Final_Amount, 
+                    Payment_Method, Transaction_ID, Payment_Status, Payment_Date 
+                FROM billing WHERE Bill_Date = %s
+            """, (bill_date,))
+
+            billing_data = cursor.fetchall()
 
             if billing_data:
                 billing_list = []
                 for data in billing_data:
+                    print("Row Data:", data)  # Debugging Output
                     billing_dict = {
-                        'Patient_ID': data[1],
-                        'Bill_Date': data[2],
-                        'Total_Amount': data[3],
-                        'Discount': data[4],
-                        'Tax_Amount': data[5],
-                        'Final_Amount': data[6],
-                        'Payment_Method': data[7],
-                        'Transaction_ID': data[8],
-                        'Payment_Status': data[9],
-                        'Payment_Date': data[10]
+                        'Patient_ID': data[0],  
+                        'Bill_Date': data[1],
+                        'Total_Amount': data[2],
+                        'Discount': data[3],
+                        'Final_Amount': data[4],
+                        'Payment_Method': data[5],
+                        'Transaction_ID': data[6],
+                        'Payment_Status': data[7],
+                        'Payment_Date': data[8]
                     }
                     billing_list.append(billing_dict)
+
                 return render_template('billingpayment.html', billing_list=billing_list)
+
 
             else:
                 return render_template('billingpayment.html', error="No billing record found for this Patient ID.")
