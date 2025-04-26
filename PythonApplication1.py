@@ -64,6 +64,10 @@ def dashboard():
     return render_template('dashboard.html')
 
 # Registration Form
+def generate_random_id(length=8):
+    """Generate a random alphanumeric ID of specified length."""
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -116,8 +120,10 @@ def register():
         finally:
             cursor.close()
     
+    # Generate ID
+    patient_id = generate_random_id()
     # Render the login/registration form for GET requests
-    return render_template('register.html')
+    return render_template('register.html', patient_id=patient_id)
 
 # login route
 @app.route('/login', methods=['GET', 'POST'])
@@ -133,7 +139,7 @@ def login():
             if action == 'login':  # Handle login
 
                 # Check if the entered credentials are for admin
-                if userid == 'admin@gmail.com' and password == '1234':
+                if userid == 'admin.hospitalmanager@gmail.com' and password == 'HospitalManager@123':
                     return redirect(url_for('dashboard'))  # Redirect to admin portal
 
                 # For non-admin users, check if the user exists in the database

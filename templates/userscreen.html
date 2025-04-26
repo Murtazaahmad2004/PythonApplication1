@@ -80,9 +80,46 @@
         .dashboard-container ul li a:last-child:hover {
             background-color: #d32f2f; /* Darker red on hover */
         }
+
+        .footer {
+            width: 100%;
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: black;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 70px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center contents horizontally */
+            text-align: center;
+        }
+
+        .navbar-header h1 {
+            color: white;
+            font-size: 1.5em;
+            margin: 0px;
+        }
+
     </style>
 </head>
 <body>
+    <div class="navbar">
+        <div class="navbar-header">
+            <h1>Al-Khidmat Razi Hospital Rawalpindi</h1>
+        </div>
+    </div>
     <div class="dashboard-container">
         <h1>User Dashboard</h1>
         <p>Welcome to your dashboard. Choose an action below:</p>
@@ -95,6 +132,9 @@
             <li><a href="/onlineappo_data">Online Appointments Data</a></li>
             <li><a href="/login">Logout</a></li>
         </ul>
+    </div>
+    <div class="footer">
+        <p>&copy; 2023 Al-Khidmat Razi Hospital Rawalpindi. All rights reserved.</p>
     </div>
 </body>
 </html>

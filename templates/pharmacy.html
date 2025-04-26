@@ -19,7 +19,6 @@
             justify-content: center; /* Center the form horizontally */
             align-items: center;     /* Center the form vertically */
             height: 100vh;           /* Full viewport height */
-            background: linear-gradient(to bottom, #4facfe, #00f2fe); /* Gradient background */
             color: #333;
             overflow-y: hidden;
         }
@@ -100,6 +99,37 @@
             animation: fadeInOut 3s ease forwards;
         }
 
+        .footer {
+            width: 100%;
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: black;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 70px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center contents horizontally */
+            text-align: center;
+        }
+
+        .navbar-header h1 {
+            color: white;
+            font-size: 1.5em;
+            margin: 0px;
+        }
+        
         /* Fade In and Out Animation */
         @keyframes fadeInOut {
             0% {
@@ -132,7 +162,11 @@
     </style>
 </head>
 <body>
-
+    <div class="navbar">
+        <div class="navbar-header">
+            <h1>Al-Khidmat Razi Hospital Rawalpindi</h1>
+        </div>
+    </div>
 <form method="POST">
     <h1>Pharmacy Management</h1>
     <input type="hidden" name="action" value="register">
@@ -194,5 +228,8 @@
         Pharamacy Data Insert successfully!
     </div>
     {% endif %}
+    <div class="footer">
+        <p>&copy; 2023 Al-Khidmat Razi Hospital. All rights reserved.</p>
+    </div>
 </body>
 </html>

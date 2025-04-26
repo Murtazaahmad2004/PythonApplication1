@@ -12,8 +12,7 @@
             padding: 0;
         }
         header {
-            background-color: #4CAF50;
-            color: white;
+            color: black;
             text-align: center;
             padding: 10px 0;
         }
@@ -23,7 +22,7 @@
             padding: 20px;
             background-color: #fff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
+            margin-top: 6%;
             text-align: center;
         }
         form {
@@ -77,15 +76,51 @@
             color: red;
             font-size: 16px;
         }
+
+        .footer {
+            width: 100%;
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: black;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 70px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center contents horizontally */
+            text-align: center;
+        }
+
+        .navbar-header h1 {
+            color: white;
+            font-size: 1.5em;
+            margin: 0px;
+        }
+
     </style>
 </head>
 <body>
-
-<header>
-    <h1>Online Appointment Data</h1>
-</header>
+    <div class="navbar">
+        <div class="navbar-header">
+            <h1>Al-Khidmat Razi Hospital Rawalpindi</h1>
+        </div>
+    </div>
 
 <div class="container">
+    <header>
+        <h1>Online Appointment Data</h1>
+    </header>
     <!-- Form to search for online appointment data -->
     <form method="POST">
         <label for="appo_date">Enter Appointment Date:</label>
@@ -118,6 +153,9 @@
 
     <!-- Back to Appointments Button -->
     <button class="back-button" onclick="window.location.href='/userscreen';">Back to UserScreen</button>
+</div>
+<div class="footer">
+    <p>&copy; 2023 Al-Khidmat Razi Hospital Rawalpindi. All rights reserved.</p>
 </div>
 </body>
 </html>
