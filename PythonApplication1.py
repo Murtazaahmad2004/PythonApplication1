@@ -38,41 +38,46 @@ class Admin(User):
 
 # Routes
 
-# Homepage
+# Start Homepage #
 @app.route('/')
 def home():
     return render_template('login.html')
+# End Homepage #
 
-# user screen
+# Start User Screen #
 @app.route('/userscreen')
 def userscreen():
     return render_template('userscreen.html')  # Make sure the 'userscreen.html' template exists
+# End User Screen #
 
-#doctor list
+# Start Doctor List #
 @app.route('/availabledoctor')
 def doctor():
     return render_template('availabledoctor.html')
+# End Doctor List #
 
-#appointment call
+# Start Appointment call #
 @app.route('/appointmentcall')
 def appointmentcall():
     return render_template('appointmentcall.html')
+# End Appointment call #
 
-# Dashboard
+# Start Dashboard #
 @app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html')
+# End Dashboard #
 
-# Registration Form
+# Start Registration Form #
 def generate_random_id(length=8):
     """Generate a random alphanumeric ID of specified length."""
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         # Retrieve form data
         action = request.form.get('action')  # Determines whether it's login or register
+        patient_id = request.form.get('patient_id')
         patient_name = request.form.get('patient_name')
         gender = request.form.get('gender')
         id_card = request.form.get('idcardnumber')
@@ -83,15 +88,15 @@ def register():
         try:
             if action == 'register':  # Handle registration
                 # Check if all fields are provided
-                if not all([patient_name, gender, id_card, password, confirmpass]):
+                if not all([patient_id, patient_name, gender, id_card, password, confirmpass]):
                     error = "All fields are required for registration!"
                     return render_template('register.html', error=error)
 
                 # Insert the user data into the database
                 cursor.execute("""
-                    INSERT INTO patient_register (Patient_Name, Gender, ID_Card_Number, Password, Confirm_Password)
-                    VALUES (%s, %s, %s, %s, %s)
-                """, (patient_name, gender, id_card, password, confirmpass))
+                    INSERT INTO patient_register (Patient_ID, Patient_Name, Gender, ID_Card_Number, Password, Confirm_Password)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                """, (patient_id, patient_name, gender, id_card, password, confirmpass))
                 db.commit()
                 success_message = "User registered successfully! You can now log in."
                 return render_template('login.html', success=success_message)
@@ -119,13 +124,13 @@ def register():
             return jsonify({'error': str(e)}), 400
         finally:
             cursor.close()
-    
     # Generate ID
     patient_id = generate_random_id()
     # Render the login/registration form for GET requests
     return render_template('register.html', patient_id=patient_id)
+# End Registration Form #
 
-# login route
+# Start login Form #
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -172,14 +177,15 @@ def login():
 
     # Render the login/registration form for GET requests
     return render_template('login.html')
+# End login Form #
 
-# Appointment Route
+# Start Appointment Form #
+def generate_random_appo_id(length=8):
+    """Generate a random alphanumeric ID of specified length."""
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+
 @app.route('/appointment', methods=['GET', 'POST'])
 def appointment_patient():
-    def generate_random_id(length=8):
-        """Generate a random alphanumeric ID of specified length."""
-        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
-
     if request.method == 'POST':
         # Retrieve form data
         patient_id = request.form.get('patient_id')
@@ -225,11 +231,11 @@ def appointment_patient():
             cursor.close()
 
     # For GET request, pre-generate random IDs
-    patient_id = generate_random_id()
-    appoid = generate_random_id()
-    return render_template('appointment.html', patient_id=patient_id, appoid=appoid)
+    appoid = generate_random_appo_id()
+    return render_template('appointment.html', appoid=appoid)
+# End Appointment Form #
 
-# ward bed Route
+# Start Ward Bed Form #
 @app.route('/wardbed', methods=['GET', 'POST'])
 def ward_bed():
     if request.method == 'POST':
@@ -274,7 +280,6 @@ def ward_bed():
         finally:
             cursor.close()
 
-    # Generate random unique IDs for Bed ID and Patient ID
     def generate_random_id(prefix, length=8):
         characters = string.ascii_uppercase + string.digits
         random_id = ''.join(random.choices(characters, k=length))
@@ -288,21 +293,19 @@ def ward_bed():
         cursor.execute("SELECT * FROM ward_bed WHERE Bed_ID = %s OR Patient_ID = %s", (bed_id, patient_id))
         if not cursor.fetchone():
             break
-
     cursor.close()
 
     # Render the form for GET request with prefilled IDs
     return render_template('wardbed.html', bed_id=bed_id, patient_id=patient_id)
+# End Ward Bed Form #
 
-# pharmacy Route
+# Start Pharmacy Form #
 def generate_random_id(length=8):
     """Generate a random alphanumeric string of the given length."""
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
-
 def generate_random_batch_no(length=6):
     """Generate a random alphanumeric string of the given length."""
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
-
 @app.route('/pharmacy', methods=['GET', 'POST'])
 def pharmacy():
     if request.method == 'POST':
@@ -350,16 +353,12 @@ def pharmacy():
     random_medicine_id = generate_random_id()
     random_batch_no = generate_random_batch_no()
     return render_template('pharmacy.html', random_medicine_id=random_medicine_id, random_batch_no=random_batch_no)
+# End Pharmacy Form #
 
-# billing Route
-def generate_random_patient_id():
-    """Generate a random alphanumeric patient ID."""
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-
+# Start Billing Form #
 def generate_random_transaction_id():
     """Generate a random numeric transaction ID."""
     return ''.join(random.choices(string.digits, k=10))
-
 def is_patient_id_unique(patient_id):
     """Check if the patient ID is unique in the database."""
     cursor = db.cursor()
@@ -367,7 +366,6 @@ def is_patient_id_unique(patient_id):
     count = cursor.fetchone()[0]
     cursor.close()
     return count == 0
-
 def is_transaction_id_unique(transaction_id):
     """Check if the transaction ID is unique in the database."""
     cursor = db.cursor()
@@ -375,7 +373,6 @@ def is_transaction_id_unique(transaction_id):
     count = cursor.fetchone()[0]
     cursor.close()
     return count == 0
-
 @app.route('/billing', methods=['GET', 'POST'])
 def billing():
     if request.method == 'POST':
@@ -396,10 +393,8 @@ def billing():
             return error
 
         # Ensure unique Patient ID and Transaction ID
-        if not is_patient_id_unique(patient_id):
-            return "Patient ID already exists in the database!"
-        if not is_transaction_id_unique(trns_id):
-            return "Transaction ID already exists in the database!"
+        if payment_mtd.lower() == 'cash':
+            trns_id = 0
 
         # Insert the patient data into the database
         cursor = db.cursor()
@@ -422,26 +417,20 @@ def billing():
 
     # Generate random IDs for the GET request
     while True:
-        random_patient_id = generate_random_patient_id()
         random_transaction_id = generate_random_transaction_id()
-        if is_patient_id_unique(random_patient_id) and is_transaction_id_unique(random_transaction_id):
+        if is_transaction_id_unique(random_transaction_id):
             break
 
-    return render_template('billing.html', random_patient_id=random_patient_id, random_transaction_id=random_transaction_id)
+    return render_template('billing.html', random_transaction_id=random_transaction_id)
+# End Billing Form #
 
-# online appo Route
+# Star Online Appointment Form #
 def generate_random_doctor_id():
     """Generate a random alphanumeric Doctor ID."""
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-
-def generate_random_patient_id():
-    """Generate a random alphanumeric patient ID."""
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-
 def generate_random_appointment_id():
     """Generate a random alphanumeric appointment ID."""
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-
 def is_doctor_id_unique(doctor_id):
     """Check if the Doctor ID is unique in the database."""
     cursor = db.cursor()
@@ -449,7 +438,6 @@ def is_doctor_id_unique(doctor_id):
     count = cursor.fetchone()[0]
     cursor.close()
     return count == 0
-
 def is_patient_id_unique(patient_id):
     """Check if the Patient ID is unique in the database."""
     cursor = db.cursor()
@@ -457,7 +445,6 @@ def is_patient_id_unique(patient_id):
     count = cursor.fetchone()[0]
     cursor.close()
     return count == 0
-
 def is_appointment_id_unique(appo_id):
     """Check if the Appointment ID is unique in the database."""
     cursor = db.cursor()
@@ -465,7 +452,6 @@ def is_appointment_id_unique(appo_id):
     count = cursor.fetchone()[0]
     cursor.close()
     return count == 0
-
 @app.route('/onlineappointment', methods=['GET', 'POST'])
 def onlineappointment():
     if request.method == 'POST':
@@ -513,15 +499,15 @@ def onlineappointment():
     random_patient_id = None
     random_appo_id = None
     while True:
-        random_patient_id = generate_random_patient_id()
         random_doctor_id = generate_random_doctor_id()
         random_appo_id = generate_random_appointment_id()
         if is_doctor_id_unique(random_doctor_id):
             break
 
-    return render_template('onlineappointment.html', random_appo_id=random_appo_id ,random_patient_id=random_patient_id, random_doctor_id=random_doctor_id)
+    return render_template('onlineappointment.html', random_appo_id=random_appo_id, random_doctor_id=random_doctor_id)
+# End Online Appointment Form #
 
-# fetch billing and payment data
+# Start Fetch Billing and Payment Data #
 @app.route('/billingpayment', methods=['GET', 'POST'])
 def billing_payment():
     if request.method == 'POST':
@@ -576,8 +562,9 @@ def billing_payment():
 
     # Render the form for GET request
     return render_template('billingpayment.html')
+# End Fetch Billing and Payment Data #
 
-# fetch appointment data
+# Start Fetch Appointment Data #
 @app.route('/appointment_date', methods=['GET', 'POST'])
 def appointment_date():
     if request.method == 'POST':
@@ -627,8 +614,9 @@ def appointment_date():
 
     # Render the form for GET request
     return render_template('appointment_date.html')
+# End Fetch Appointment Data #
 
-# fetch online appo data
+# Start Fetch Online Appointment Data #
 @app.route('/onlineappo_data', methods=['GET', 'POST'])
 def onlineappo_data():
     if request.method == 'POST':
@@ -678,6 +666,7 @@ def onlineappo_data():
 
     # Render the form for GET request
     return render_template('onlineappo_data.html')
+# End Fetch Online Appointment Data #
 
 # Run the app
 if __name__ == '__main__':
